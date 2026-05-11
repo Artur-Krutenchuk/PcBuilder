@@ -70,10 +70,16 @@
         setText("summary-gpu", gpu?.name ?? "-");
         setText("summary-psu", psu?.name ?? "-");
 
-        setText("quick-cpu", cpu ? `${cpu.cores}C/${cpu.threads}T · ${cpu.baseClockGhz}GHz · ${cpu.socket}` : "-");
-        setText("quick-motherboard", motherboard ? `${motherboard.chipset} · ${motherboard.formFactor} · ${motherboard.socket}` : "-");
-        setText("quick-ram", ram ? `${ram.capacityGb}GB · ${ram.frequencyMhz}MHz · ${ram.ramType}` : "-");
-        setText("quick-gpu", gpu ? `${gpu.vramGb}GB VRAM · ${gpu.tdpWatts}W TDP` : "-");
+        const cpuGen = cpu?.generation ? `${cpu.generation} · ` : "";
+        const cpuTier = cpu?.performanceTier ? ` · ${cpu.performanceTier}` : "";
+        setText("quick-cpu", cpu ? `${cpuGen}${cpu.cores}C/${cpu.threads}T · ${cpu.baseClockGhz}GHz · ${cpu.socket}${cpuTier}` : "-");
+        const mbFf = motherboard?.formFactor ?? "—";
+        setText("quick-motherboard", motherboard ? `${motherboard.chipset} · ${mbFf} · ${motherboard.socket}` : "-");
+        const ramTier = ram?.performanceTier ? ` · ${ram.performanceTier}` : "";
+        setText("quick-ram", ram ? `${ram.capacityGb}GB · ${ram.frequencyMhz}MHz · ${ram.ramType}${ramTier}` : "-");
+        const gpuLen = gpu?.lengthMm != null ? ` · ${gpu.lengthMm}mm` : "";
+        const gpuTier = gpu?.performanceTier ? ` · ${gpu.performanceTier}` : "";
+        setText("quick-gpu", gpu ? `${gpu.vramGb}GB VRAM · ${gpu.tdpWatts}W TDP${gpuLen}${gpuTier}` : "-");
         setText("quick-psu", psu ? `${psu.wattage}W · ${psu.efficiencyRating}` : "-");
 
         const totalPrice =

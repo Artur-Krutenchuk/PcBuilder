@@ -65,7 +65,9 @@ public sealed class JsonComponentRepository : IComponentRepository
                 TdpWatts = GetInt(element, "tdpWatts"),
                 Cores = GetInt(element, "cores"),
                 Threads = GetInt(element, "threads"),
-                BaseClockGhz = GetDecimal(element, "baseClockGhz")
+                BaseClockGhz = GetDecimal(element, "baseClockGhz"),
+                Generation = GetNullableString(element, "generation"),
+                PerformanceTier = GetNullableString(element, "performanceTier")
             },
             "motherboard" => new Motherboard
             {
@@ -77,7 +79,8 @@ public sealed class JsonComponentRepository : IComponentRepository
                 Socket = GetString(element, "socket"),
                 SupportedRamTypes = GetStringList(element, "supportedRamTypes"),
                 Chipset = GetString(element, "chipset"),
-                FormFactor = GetString(element, "formFactor")
+                FormFactor = GetNullableString(element, "formFactor"),
+                SupportedCpuGenerations = GetStringList(element, "supportedCpuGenerations")
             },
             "ram" => new Ram
             {
@@ -88,7 +91,8 @@ public sealed class JsonComponentRepository : IComponentRepository
                 ImageUrl = GetString(element, "imageUrl"),
                 RamType = GetString(element, "ramType"),
                 CapacityGb = GetInt(element, "capacityGb"),
-                FrequencyMhz = GetInt(element, "frequencyMhz")
+                FrequencyMhz = GetInt(element, "frequencyMhz"),
+                PerformanceTier = GetNullableString(element, "performanceTier")
             },
             "gpu" => new Gpu
             {
@@ -99,7 +103,19 @@ public sealed class JsonComponentRepository : IComponentRepository
                 ImageUrl = GetString(element, "imageUrl"),
                 TdpWatts = GetInt(element, "tdpWatts"),
                 VramGb = GetInt(element, "vramGb"),
-                RecommendedPsuWattage = GetInt(element, "recommendedPsuWattage")
+                RecommendedPsuWattage = GetInt(element, "recommendedPsuWattage"),
+                LengthMm = GetNullableInt(element, "lengthMm"),
+                PerformanceTier = GetNullableString(element, "performanceTier")
+            },
+            "case" => new Case
+            {
+                Id = GetInt(element, "id"),
+                Name = GetString(element, "name"),
+                Manufacturer = GetString(element, "manufacturer"),
+                Price = GetDecimal(element, "price"),
+                ImageUrl = GetString(element, "imageUrl"),
+                SupportedFormFactors = GetStringList(element, "supportedFormFactors"),
+                MaxGpuLengthMm = GetNullableInt(element, "maxGpuLengthMm")
             },
             "psu" => new Psu
             {
@@ -134,6 +150,24 @@ public sealed class JsonComponentRepository : IComponentRepository
         return element.TryGetProperty(name, out var property)
             ? property.GetString() ?? string.Empty
             : string.Empty;
+    }
+
+    private static string? GetNullableString(JsonElement element, string name)
+    {
+        if (!element.TryGetProperty(name, out var property))
+        {
+            return null;
+        }
+
+        var value = property.GetString();
+        return string.IsNullOrWhiteSpace(value) ? null : value;
+    }
+
+    private static int? GetNullableInt(JsonElement element, string name)
+    {
+        return element.TryGetProperty(name, out var property) && property.TryGetInt32(out var value)
+            ? value
+            : null;
     }
 
     private static List<string> GetStringList(JsonElement element, string name)

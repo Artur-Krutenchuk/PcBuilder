@@ -10,5 +10,7 @@ public sealed class Motherboard : Component
 
     public string Chipset { get; init; } = string.Empty;
 
-    public string FormFactor { get; init; } = string.Empty;
+    public string? FormFactor { get; init; }
+
+    public List<string> SupportedCpuGenerations { get; init; } = [];
 }

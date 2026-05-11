@@ -226,6 +226,14 @@ else
 
                                 @if (component is Cpu cpu)
                                 {
+                                    @if (!string.IsNullOrEmpty(cpu.Generation))
+                                    {
+                                        <p class="mb-1 small">Generation: @cpu.Generation</p>
+                                    }
+                                    @if (!string.IsNullOrEmpty(cpu.PerformanceTier))
+                                    {
+                                        <p class="mb-1 small">Tier: @cpu.PerformanceTier</p>
+                                    }
                                     <p class="mb-1 small">Socket: @cpu.Socket</p>
                                     <p class="mb-1 small">Cores/Threads: @cpu.Cores/@cpu.Threads</p>
                                     <p class="mb-1 small">Base: @cpu.BaseClockGhz.ToString("0.0") GHz</p>
@@ -235,18 +243,38 @@ else
                                 {
                                     <p class="mb-1 small">Socket: @motherboard.Socket</p>
                                     <p class="mb-1 small">Chipset: @motherboard.Chipset</p>
-                                    <p class="mb-1 small">Form factor: @motherboard.FormFactor</p>
-                                    <p class="mb-0 small">RAM: @string.Join(", ", motherboard.SupportedRamTypes)</p>
+                                    <p class="mb-1 small">Form factor: @(motherboard.FormFactor ?? "—")</p>
+                                    @if (motherboard.SupportedCpuGenerations.Count > 0)
+                                    {
+                                        <p class="mb-1 small">RAM: @string.Join(", ", motherboard.SupportedRamTypes)</p>
+                                        <p class="mb-0 small">CPU gens: @string.Join(", ", motherboard.SupportedCpuGenerations)</p>
+                                    }
+                                    else
+                                    {
+                                        <p class="mb-0 small">RAM: @string.Join(", ", motherboard.SupportedRamTypes)</p>
+                                    }
                                 }
                                 else if (component is Ram ram)
                                 {
                                     <p class="mb-1 small">Type: @ram.RamType</p>
                                     <p class="mb-1 small">Capacity: @ram.CapacityGb GB</p>
+                                    @if (!string.IsNullOrEmpty(ram.PerformanceTier))
+                                    {
+                                        <p class="mb-1 small">Tier: @ram.PerformanceTier</p>
+                                    }
                                     <p class="mb-0 small">Frequency: @ram.FrequencyMhz MHz</p>
                                 }
                                 else if (component is Gpu gpu)
                                 {
                                     <p class="mb-1 small">VRAM: @gpu.VramGb GB</p>
+                                    @if (gpu.LengthMm is { } lenMm)
+                                    {
+                                        <p class="mb-1 small">Length: @lenMm mm</p>
+                                    }
+                                    @if (!string.IsNullOrEmpty(gpu.PerformanceTier))
+                                    {
+                                        <p class="mb-1 small">Tier: @gpu.PerformanceTier</p>
+                                    }
                                     <p class="mb-1 small">TDP: @gpu.TdpWatts W</p>
                                     <p class="mb-0 small">Recommended PSU: @gpu.RecommendedPsuWattage W</p>
                                 }
@@ -254,6 +282,18 @@ else
                                 {
                                     <p class="mb-1 small">Wattage: @psu.Wattage W</p>
                                     <p class="mb-0 small">Efficiency: @psu.EfficiencyRating</p>
+                                }
+                                else if (component is Case pcCase)
+                                {
+                                    <p class="mb-1 small">Form factors: @string.Join(", ", pcCase.SupportedFormFactors)</p>
+                                    @if (pcCase.MaxGpuLengthMm is { } maxLen)
+                                    {
+                                        <p class="mb-0 small">Max GPU: @maxLen mm</p>
+                                    }
+                                    else
+                                    {
+                                        <p class="mb-0 small text-muted">Max GPU length not specified</p>
+                                    }
                                 }
                             </div>
                         </div>

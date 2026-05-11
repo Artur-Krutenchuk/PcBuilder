@@ -9,6 +9,8 @@
     "cores": 6,
     "threads": 12,
     "baseClockGhz": 3.7,
+    "generation": "Zen 3",
+    "performanceTier": "Mid-range",
     "price": 159.99,
     "imageUrl": "https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea"
   },
@@ -22,6 +24,8 @@
     "cores": 8,
     "threads": 16,
     "baseClockGhz": 3.8,
+    "generation": "Zen 3",
+    "performanceTier": "High",
     "price": 219.99,
     "imageUrl": "https://images.unsplash.com/photo-1517336714739-489689fd1ca8"
   },
@@ -35,6 +39,8 @@
     "cores": 6,
     "threads": 12,
     "baseClockGhz": 3.8,
+    "generation": "Zen 4",
+    "performanceTier": "Mid-range",
     "price": 229.99,
     "imageUrl": "https://images.unsplash.com/photo-1587202372775-e229f172b9d7"
   },
@@ -48,6 +54,8 @@
     "cores": 8,
     "threads": 16,
     "baseClockGhz": 4.2,
+    "generation": "Zen 4",
+    "performanceTier": "Enthusiast",
     "price": 389.99,
     "imageUrl": "https://images.unsplash.com/photo-1555617981-dac3880eac6e"
   },
@@ -61,6 +69,8 @@
     "cores": 6,
     "threads": 12,
     "baseClockGhz": 2.5,
+    "generation": "Alder Lake",
+    "performanceTier": "Entry",
     "price": 169.99,
     "imageUrl": "https://images.unsplash.com/photo-1625842268584-8f3296236761"
   },
@@ -74,6 +84,8 @@
     "cores": 14,
     "threads": 20,
     "baseClockGhz": 3.5,
+    "generation": "Raptor Lake",
+    "performanceTier": "High",
     "price": 309.99,
     "imageUrl": "https://images.unsplash.com/photo-1640826844110-25f9b61f9cdd"
   },
@@ -87,6 +99,8 @@
     "cores": 12,
     "threads": 20,
     "baseClockGhz": 3.6,
+    "generation": "Alder Lake",
+    "performanceTier": "High",
     "price": 289.99,
     "imageUrl": "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9"
   },
@@ -100,6 +114,8 @@
     "cores": 20,
     "threads": 28,
     "baseClockGhz": 3.4,
+    "generation": "Raptor Lake Refresh",
+    "performanceTier": "Enthusiast",
     "price": 419.99,
     "imageUrl": "https://images.unsplash.com/photo-1611078489935-0cb964de46d6"
   },
@@ -113,6 +129,7 @@
     "chipset": "B550",
     "formFactor": "ATX",
     "supportedRamTypes": ["DDR4"],
+    "supportedCpuGenerations": ["Zen 2", "Zen 3"],
     "price": 149.99,
     "imageUrl": "https://images.unsplash.com/photo-1562976540-1502c2145186"
   },
@@ -125,6 +142,7 @@
     "chipset": "B550",
     "formFactor": "ATX",
     "supportedRamTypes": ["DDR4"],
+    "supportedCpuGenerations": ["Zen 2", "Zen 3"],
     "price": 159.99,
     "imageUrl": "https://images.unsplash.com/photo-1587202372616-b43abea06c2a"
   },
@@ -137,6 +155,7 @@
     "chipset": "B550",
     "formFactor": "Micro-ATX",
     "supportedRamTypes": ["DDR4"],
+    "supportedCpuGenerations": ["Zen 2", "Zen 3"],
     "price": 109.99,
     "imageUrl": "https://images.unsplash.com/photo-1591488320449-011701bb6704"
   },
@@ -149,6 +168,7 @@
     "chipset": "B650",
     "formFactor": "ATX",
     "supportedRamTypes": ["DDR5"],
+    "supportedCpuGenerations": ["Zen 4", "Zen 5"],
     "price": 239.99,
     "imageUrl": "https://images.unsplash.com/photo-1587202372775-e229f172b9d7"
   },
@@ -161,6 +181,7 @@
     "chipset": "X670",
     "formFactor": "ATX",
     "supportedRamTypes": ["DDR5"],
+    "supportedCpuGenerations": ["Zen 4", "Zen 5"],
     "price": 429.99,
     "imageUrl": "https://images.unsplash.com/photo-1592664474505-6ea65f3cfd63"
   },
@@ -173,6 +194,7 @@
     "chipset": "B650",
     "formFactor": "ATX",
     "supportedRamTypes": ["DDR5"],
+    "supportedCpuGenerations": ["Zen 4", "Zen 5"],
     "price": 229.99,
     "imageUrl": "https://images.unsplash.com/photo-1600348712270-5af9e3590f66"
   },
@@ -185,6 +207,7 @@
     "chipset": "Z790",
     "formFactor": "ATX",
     "supportedRamTypes": ["DDR5"],
+    "supportedCpuGenerations": ["Alder Lake", "Raptor Lake", "Raptor Lake Refresh"],
     "price": 259.99,
     "imageUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475"
   },
@@ -197,6 +220,7 @@
     "chipset": "B760",
     "formFactor": "ATX",
     "supportedRamTypes": ["DDR4"],
+    "supportedCpuGenerations": ["Alder Lake", "Raptor Lake", "Raptor Lake Refresh"],
     "price": 199.99,
     "imageUrl": "https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea"
   },
@@ -209,6 +233,7 @@
     "ramType": "DDR4",
     "capacityGb": 16,
     "frequencyMhz": 3200,
+    "performanceTier": "Standard",
     "price": 54.99,
     "imageUrl": "https://images.unsplash.com/photo-1562976540-1502c2145186"
   },
@@ -220,6 +245,7 @@
     "ramType": "DDR4",
     "capacityGb": 32,
     "frequencyMhz": 3600,
+    "performanceTier": "Performance",
     "price": 99.99,
     "imageUrl": "https://images.unsplash.com/photo-1518773553398-650c184e0bb3"
   },
@@ -231,6 +257,7 @@
     "ramType": "DDR4",
     "capacityGb": 16,
     "frequencyMhz": 3600,
+    "performanceTier": "Performance",
     "price": 59.99,
     "imageUrl": "https://images.unsplash.com/photo-1540829917886-91ab031b1764"
   },
@@ -242,6 +269,7 @@
     "ramType": "DDR4",
     "capacityGb": 32,
     "frequencyMhz": 4000,
+    "performanceTier": "Enthusiast",
     "price": 129.99,
     "imageUrl": "https://images.unsplash.com/photo-1587202372616-b43abea06c2a"
   },
@@ -253,6 +281,7 @@
     "ramType": "DDR5",
     "capacityGb": 32,
     "frequencyMhz": 5600,
+    "performanceTier": "Performance",
     "price": 119.99,
     "imageUrl": "https://images.unsplash.com/photo-1562976540-1502c2145186"
   },
@@ -264,6 +293,7 @@
     "ramType": "DDR5",
     "capacityGb": 32,
     "frequencyMhz": 6200,
+    "performanceTier": "Enthusiast",
     "price": 179.99,
     "imageUrl": "https://images.unsplash.com/photo-1517336714739-489689fd1ca8"
   },
@@ -275,6 +305,7 @@
     "ramType": "DDR5",
     "capacityGb": 32,
     "frequencyMhz": 6000,
+    "performanceTier": "Performance",
     "price": 129.99,
     "imageUrl": "https://images.unsplash.com/photo-1593640408182-31c228c20f12"
   },
@@ -286,6 +317,7 @@
     "ramType": "DDR5",
     "capacityGb": 64,
     "frequencyMhz": 6400,
+    "performanceTier": "Enthusiast",
     "price": 289.99,
     "imageUrl": "https://images.unsplash.com/photo-1624705002806-5d72df19c3ad"
   },
@@ -298,6 +330,8 @@
     "vramGb": 8,
     "tdpWatts": 115,
     "recommendedPsuWattage": 550,
+    "lengthMm": 245,
+    "performanceTier": "Mainstream",
     "price": 299.99,
     "imageUrl": "https://images.unsplash.com/photo-1591488320449-011701bb6704"
   },
@@ -309,6 +343,8 @@
     "vramGb": 8,
     "tdpWatts": 160,
     "recommendedPsuWattage": 600,
+    "lengthMm": 250,
+    "performanceTier": "Mainstream",
     "price": 399.99,
     "imageUrl": "https://images.unsplash.com/photo-1593642634443-44adaa06623a"
   },
@@ -320,6 +356,8 @@
     "vramGb": 12,
     "tdpWatts": 200,
     "recommendedPsuWattage": 650,
+    "lengthMm": 260,
+    "performanceTier": "Enthusiast",
     "price": 549.99,
     "imageUrl": "https://images.unsplash.com/photo-1600348712270-5af9e3590f66"
   },
@@ -331,6 +369,8 @@
     "vramGb": 12,
     "tdpWatts": 220,
     "recommendedPsuWattage": 700,
+    "lengthMm": 265,
+    "performanceTier": "Enthusiast",
     "price": 599.99,
     "imageUrl": "https://images.unsplash.com/photo-1587202372775-e229f172b9d7"
   },
@@ -342,6 +382,8 @@
     "vramGb": 16,
     "tdpWatts": 263,
     "recommendedPsuWattage": 700,
+    "lengthMm": 280,
+    "performanceTier": "Enthusiast",
     "price": 499.99,
     "imageUrl": "https://images.unsplash.com/photo-1625842268584-8f3296236761"
   },
@@ -353,6 +395,8 @@
     "vramGb": 16,
     "tdpWatts": 285,
     "recommendedPsuWattage": 750,
+    "lengthMm": 300,
+    "performanceTier": "Enthusiast",
     "price": 799.99,
     "imageUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475"
   },
@@ -364,6 +408,8 @@
     "vramGb": 16,
     "tdpWatts": 320,
     "recommendedPsuWattage": 850,
+    "lengthMm": 320,
+    "performanceTier": "Flagship",
     "price": 1099.99,
     "imageUrl": "https://images.unsplash.com/photo-1592664474505-6ea65f3cfd63"
   },
@@ -375,6 +421,8 @@
     "vramGb": 24,
     "tdpWatts": 450,
     "recommendedPsuWattage": 1000,
+    "lengthMm": 340,
+    "performanceTier": "Flagship",
     "price": 1699.99,
     "imageUrl": "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9"
   },
@@ -458,5 +506,65 @@
     "efficiencyRating": "80+ Gold",
     "price": 209.99,
     "imageUrl": "https://images.unsplash.com/photo-1591488320449-011701bb6704"
+  },
+  {
+    "id": 501,
+    "type": "case",
+    "name": "Corsair 4000D Airflow",
+    "manufacturer": "Corsair",
+    "price": 104.99,
+    "imageUrl": "https://images.unsplash.com/photo-1587202372775-e229f172b9d7",
+    "supportedFormFactors": ["ATX", "Micro-ATX", "Mini-ITX"],
+    "maxGpuLengthMm": 360
+  },
+  {
+    "id": 502,
+    "type": "case",
+    "name": "ASUS ProArt PA602",
+    "manufacturer": "ASUS",
+    "price": 299.99,
+    "imageUrl": "https://images.unsplash.com/photo-1562976540-1502c2145186",
+    "supportedFormFactors": ["ATX", "E-ATX", "Micro-ATX"],
+    "maxGpuLengthMm": 450
+  },
+  {
+    "id": 503,
+    "type": "case",
+    "name": "MSI MPG GUNGNIR 300R",
+    "manufacturer": "MSI",
+    "price": 129.99,
+    "imageUrl": "https://images.unsplash.com/photo-1591488320449-011701bb6704",
+    "supportedFormFactors": ["ATX", "Micro-ATX", "Mini-ITX"],
+    "maxGpuLengthMm": 365
+  },
+  {
+    "id": 504,
+    "type": "case",
+    "name": "Gigabyte AORUS C300 GLASS",
+    "manufacturer": "Gigabyte",
+    "price": 189.99,
+    "imageUrl": "https://images.unsplash.com/photo-1600348712270-5af9e3590f66",
+    "supportedFormFactors": ["ATX", "Micro-ATX", "Mini-ITX"],
+    "maxGpuLengthMm": 420
+  },
+  {
+    "id": 505,
+    "type": "case",
+    "name": "Corsair 2500X Micro",
+    "manufacturer": "Corsair",
+    "price": 119.99,
+    "imageUrl": "https://images.unsplash.com/photo-1587202372616-b43abea06c2a",
+    "supportedFormFactors": ["Mini-ITX"],
+    "maxGpuLengthMm": 330
+  },
+  {
+    "id": 506,
+    "type": "case",
+    "name": "ASUS Prime AP201",
+    "manufacturer": "ASUS",
+    "price": 99.99,
+    "imageUrl": "https://images.unsplash.com/photo-1517336714739-489689fd1ca8",
+    "supportedFormFactors": ["Micro-ATX", "Mini-ITX"],
+    "maxGpuLengthMm": 338
   }
 ]

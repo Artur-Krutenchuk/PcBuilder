@@ -9,4 +9,6 @@ public sealed class Ram : Component
     public int CapacityGb { get; init; }
 
     public int FrequencyMhz { get; init; }
+
+    public string? PerformanceTier { get; init; }
 }

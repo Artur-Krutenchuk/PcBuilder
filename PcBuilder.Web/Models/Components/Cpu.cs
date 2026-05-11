@@ -13,4 +13,8 @@ public sealed class Cpu : Component
     public int Threads { get; init; }
 
     public decimal BaseClockGhz { get; init; }
+
+    public string? Generation { get; init; }
+
+    public string? PerformanceTier { get; init; }
 }

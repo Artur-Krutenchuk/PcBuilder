@@ -9,4 +9,8 @@ public sealed class Gpu : Component
     public int VramGb { get; init; }
 
     public int RecommendedPsuWattage { get; init; }
+
+    public int? LengthMm { get; init; }
+
+    public string? PerformanceTier { get; init; }
 }
