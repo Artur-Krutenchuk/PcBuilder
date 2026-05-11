@@ -1,0 +1,315 @@
+@model PcBuilder.Web.Models.BuilderIndexViewModel
+@using System.Text.Json
+@using PcBuilder.Web.Models.Components
+@{
+    ViewData["Title"] = "PC Builder";
+    var cpus = Model.Components.Where(c => c.Type.Equals("cpu", StringComparison.OrdinalIgnoreCase)).ToList();
+    var motherboards = Model.Components.Where(c => c.Type.Equals("motherboard", StringComparison.OrdinalIgnoreCase)).ToList();
+    var rams = Model.Components.Where(c => c.Type.Equals("ram", StringComparison.OrdinalIgnoreCase)).ToList();
+    var gpus = Model.Components.Where(c => c.Type.Equals("gpu", StringComparison.OrdinalIgnoreCase)).ToList();
+    var psus = Model.Components.Where(c => c.Type.Equals("psu", StringComparison.OrdinalIgnoreCase)).ToList();
+    var componentsJson = JsonSerializer.Serialize(Model.Components);
+}
+
+<div class="builder-header d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2 mb-4">
+    <div>
+        <h1 class="h2 mb-1 fw-bold">PC Builder Configurator</h1>
+        <p class="text-secondary mb-0">Pick parts, validate instantly, and track power and budget in real time.</p>
+    </div>
+    <span class="badge rounded-pill text-bg-dark px-3 py-2">@Model.Components.Count components</span>
+</div>
+
+@if (!Model.Components.Any())
+{
+    <div class="alert alert-warning alert-animate">
+        No components were loaded from the JSON source.
+    </div>
+}
+else
+{
+    <div class="row g-4 align-items-start builder-layout">
+        <div class="col-12 col-lg-8">
+            <div id="compatibility-alerts" class="mb-3">
+                @if (Model.Compatibility is not null && !Model.Compatibility.IsValid)
+                {
+                    <div class="alert alert-danger alert-animate" role="alert">
+                        <h2 class="h5">Compatibility issues found</h2>
+                        <ul class="mb-0">
+                            @foreach (var error in Model.Compatibility.Errors)
+                            {
+                                <li>@error</li>
+                            }
+                        </ul>
+                    </div>
+                }
+
+                @if (Model.Compatibility is not null && Model.Compatibility.Warnings.Any())
+                {
+                    <div class="alert alert-warning alert-animate" role="alert">
+                        <h2 class="h5">Warnings</h2>
+                        <ul class="mb-0">
+                            @foreach (var warning in Model.Compatibility.Warnings)
+                            {
+                                <li>@warning</li>
+                            }
+                        </ul>
+                    </div>
+                }
+
+                @if (Model.Compatibility is not null && Model.Compatibility.IsValid)
+                {
+                    <div class="alert alert-success alert-animate" role="alert">
+                        Selected components are compatible.
+                    </div>
+                }
+            </div>
+
+            <form id="build-form" asp-action="Index" method="post" class="card shadow-sm builder-config-card border-0">
+                @Html.AntiForgeryToken()
+                <div class="card-header bg-white border-0 pb-0">
+                    <h2 class="h5 fw-semibold mb-0">Select Components</h2>
+                </div>
+                <div class="card-body pt-3">
+                    <div class="table-responsive">
+                        <table class="table align-middle builder-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Component</th>
+                                    <th class="w-50">Selection</th>
+                                    <th class="d-none d-md-table-cell">Quick Specs</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="fw-semibold">CPU</td>
+                                    <td>
+                                        <select class="form-select component-select" id="CpuId" name="CpuId" data-type="cpu">
+                                            <option value="">Select CPU</option>
+                                            @foreach (var cpu in cpus)
+                                            {
+                                                <option value="@cpu.Id" selected="@(Model.Build.CpuId == cpu.Id)">@cpu.Name</option>
+                                            }
+                                        </select>
+                                    </td>
+                                    <td class="text-secondary small d-none d-md-table-cell" id="quick-cpu">-</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-semibold">Motherboard</td>
+                                    <td>
+                                        <select class="form-select component-select" id="MotherboardId" name="MotherboardId" data-type="motherboard">
+                                            <option value="">Select Motherboard</option>
+                                            @foreach (var motherboard in motherboards)
+                                            {
+                                                <option value="@motherboard.Id" selected="@(Model.Build.MotherboardId == motherboard.Id)">@motherboard.Name</option>
+                                            }
+                                        </select>
+                                    </td>
+                                    <td class="text-secondary small d-none d-md-table-cell" id="quick-motherboard">-</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-semibold">RAM</td>
+                                    <td>
+                                        <select class="form-select component-select" id="RamId" name="RamId" data-type="ram">
+                                            <option value="">Select RAM</option>
+                                            @foreach (var ram in rams)
+                                            {
+                                                <option value="@ram.Id" selected="@(Model.Build.RamId == ram.Id)">@ram.Name</option>
+                                            }
+                                        </select>
+                                    </td>
+                                    <td class="text-secondary small d-none d-md-table-cell" id="quick-ram">-</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-semibold">GPU</td>
+                                    <td>
+                                        <select class="form-select component-select" id="GpuId" name="GpuId" data-type="gpu">
+                                            <option value="">Select GPU</option>
+                                            @foreach (var gpu in gpus)
+                                            {
+                                                <option value="@gpu.Id" selected="@(Model.Build.GpuId == gpu.Id)">@gpu.Name</option>
+                                            }
+                                        </select>
+                                    </td>
+                                    <td class="text-secondary small d-none d-md-table-cell" id="quick-gpu">-</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-semibold">PSU</td>
+                                    <td>
+                                        <select class="form-select component-select" id="PsuId" name="PsuId" data-type="psu">
+                                            <option value="">Select PSU</option>
+                                            @foreach (var psu in psus)
+                                            {
+                                                <option value="@psu.Id" selected="@(Model.Build.PsuId == psu.Id)">@psu.Name</option>
+                                            }
+                                        </select>
+                                    </td>
+                                    <td class="text-secondary small d-none d-md-table-cell" id="quick-psu">-</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="mt-3 d-flex flex-wrap align-items-center gap-2">
+                        <div id="summary-compat-badge" class="badge rounded-pill text-bg-secondary px-3 py-2">Not validated</div>
+                        <div id="summary-wattage-pill" class="badge rounded-pill wattage-pill wattage-neutral px-3 py-2">Wattage pending</div>
+                    </div>
+
+                    <div class="mt-3 d-flex align-items-center gap-2">
+                        <button id="check-compatibility-btn" type="button" class="btn btn-primary">
+                            Check compatibility
+                        </button>
+                        <div id="validation-spinner" class="spinner-border text-primary d-none" role="status" aria-hidden="true"></div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-12 col-lg-4">
+            <div class="card shadow-sm build-summary-card border-0">
+                <div class="card-header bg-white border-0">
+                    <h2 class="h5 mb-0 fw-semibold">Build Summary</h2>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-3">
+                        <dt class="col-5">CPU</dt>
+                        <dd id="summary-cpu" class="col-7 text-end">-</dd>
+
+                        <dt class="col-5">Motherboard</dt>
+                        <dd id="summary-motherboard" class="col-7 text-end">-</dd>
+
+                        <dt class="col-5">RAM</dt>
+                        <dd id="summary-ram" class="col-7 text-end">-</dd>
+
+                        <dt class="col-5">GPU</dt>
+                        <dd id="summary-gpu" class="col-7 text-end">-</dd>
+
+                        <dt class="col-5">PSU</dt>
+                        <dd id="summary-psu" class="col-7 text-end">-</dd>
+
+                        <dt class="col-6 border-top pt-2 mt-2">Total price</dt>
+                        <dd id="summary-total-price" class="col-6 text-end border-top pt-2 mt-2">$@Model.TotalPrice.ToString("0.00")</dd>
+
+                        <dt class="col-6">Estimated wattage</dt>
+                        <dd id="summary-estimated-wattage" class="col-6 text-end">@Model.EstimatedWattage W</dd>
+                    </dl>
+
+                    <div class="rounded-3 p-3 bg-body-tertiary border">
+                        <div class="small text-secondary mb-1">Power Health</div>
+                        <div id="summary-power-health-text" class="fw-semibold">Select components to evaluate wattage headroom.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mt-4 border-0">
+        <div class="card-header bg-white border-0">
+            <h2 class="h5 mb-0 fw-semibold">Component Catalog</h2>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                @foreach (var component in Model.Components)
+                {
+                    <div class="col-12 col-md-6 col-xl-4">
+                        <div class="card h-100 component-catalog-card border-0 shadow-sm">
+                            @if (!string.IsNullOrWhiteSpace(component.ImageUrl))
+                            {
+                                <img src="@component.ImageUrl" class="card-img-top component-image" alt="@component.Name" />
+                            }
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                                    <h3 class="h6 card-title mb-0">@component.Name</h3>
+                                    <span class="badge text-bg-light border text-dark">@component.Type.ToUpperInvariant()</span>
+                                </div>
+                                <p class="small text-muted mb-2">@component.Manufacturer</p>
+                                <p class="mb-2 fw-semibold">$@component.Price.ToString("0.00")</p>
+
+                                @if (component is Cpu cpu)
+                                {
+                                    @if (!string.IsNullOrEmpty(cpu.Generation))
+                                    {
+                                        <p class="mb-1 small">Generation: @cpu.Generation</p>
+                                    }
+                                    @if (!string.IsNullOrEmpty(cpu.PerformanceTier))
+                                    {
+                                        <p class="mb-1 small">Tier: @cpu.PerformanceTier</p>
+                                    }
+                                    <p class="mb-1 small">Socket: @cpu.Socket</p>
+                                    <p class="mb-1 small">Cores/Threads: @cpu.Cores/@cpu.Threads</p>
+                                    <p class="mb-1 small">Base: @cpu.BaseClockGhz.ToString("0.0") GHz</p>
+                                    <p class="mb-0 small">TDP: @cpu.TdpWatts W</p>
+                                }
+                                else if (component is Motherboard motherboard)
+                                {
+                                    <p class="mb-1 small">Socket: @motherboard.Socket</p>
+                                    <p class="mb-1 small">Chipset: @motherboard.Chipset</p>
+                                    <p class="mb-1 small">Form factor: @(motherboard.FormFactor ?? "—")</p>
+                                    @if (motherboard.SupportedCpuGenerations.Count > 0)
+                                    {
+                                        <p class="mb-1 small">RAM: @string.Join(", ", motherboard.SupportedRamTypes)</p>
+                                        <p class="mb-0 small">CPU gens: @string.Join(", ", motherboard.SupportedCpuGenerations)</p>
+                                    }
+                                    else
+                                    {
+                                        <p class="mb-0 small">RAM: @string.Join(", ", motherboard.SupportedRamTypes)</p>
+                                    }
+                                }
+                                else if (component is Ram ram)
+                                {
+                                    <p class="mb-1 small">Type: @ram.RamType</p>
+                                    <p class="mb-1 small">Capacity: @ram.CapacityGb GB</p>
+                                    @if (!string.IsNullOrEmpty(ram.PerformanceTier))
+                                    {
+                                        <p class="mb-1 small">Tier: @ram.PerformanceTier</p>
+                                    }
+                                    <p class="mb-0 small">Frequency: @ram.FrequencyMhz MHz</p>
+                                }
+                                else if (component is Gpu gpu)
+                                {
+                                    <p class="mb-1 small">VRAM: @gpu.VramGb GB</p>
+                                    @if (gpu.LengthMm is { } lenMm)
+                                    {
+                                        <p class="mb-1 small">Length: @lenMm mm</p>
+                                    }
+                                    @if (!string.IsNullOrEmpty(gpu.PerformanceTier))
+                                    {
+                                        <p class="mb-1 small">Tier: @gpu.PerformanceTier</p>
+                                    }
+                                    <p class="mb-1 small">TDP: @gpu.TdpWatts W</p>
+                                    <p class="mb-0 small">Recommended PSU: @gpu.RecommendedPsuWattage W</p>
+                                }
+                                else if (component is Psu psu)
+                                {
+                                    <p class="mb-1 small">Wattage: @psu.Wattage W</p>
+                                    <p class="mb-0 small">Efficiency: @psu.EfficiencyRating</p>
+                                }
+                                else if (component is Case pcCase)
+                                {
+                                    <p class="mb-1 small">Form factors: @string.Join(", ", pcCase.SupportedFormFactors)</p>
+                                    @if (pcCase.MaxGpuLengthMm is { } maxLen)
+                                    {
+                                        <p class="mb-0 small">Max GPU: @maxLen mm</p>
+                                    }
+                                    else
+                                    {
+                                        <p class="mb-0 small text-muted">Max GPU length not specified</p>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts
+{
+    <script>
+        window.pcBuilderConfig = {
+            components: @Html.Raw(componentsJson),
+            validateUrl: '@Url.Action("Validate", "Builder")'
+        };
+    </script>
+}

@@ -19,6 +19,108 @@ html {
 
 body {
   margin-bottom: 60px;
+  background: #f7f8fa;
+}
+
+@media (min-width: 992px) {
+  .build-summary-card {
+    position: sticky;
+    top: 1.25rem;
+  }
+}
+
+.builder-header h1 {
+  letter-spacing: -0.02em;
+}
+
+.builder-config-card,
+.build-summary-card {
+  border-radius: 1rem;
+}
+
+.builder-table th {
+  color: #6c757d;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom-width: 1px;
+}
+
+.builder-table td {
+  padding-top: 0.9rem;
+  padding-bottom: 0.9rem;
+}
+
+.component-catalog-card {
+  border-radius: 0.9rem;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.component-catalog-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0.7rem 1.5rem rgba(33, 37, 41, 0.14) !important;
+}
+
+.component-image {
+  height: 170px;
+  object-fit: cover;
+  border-top-left-radius: 0.9rem;
+  border-top-right-radius: 0.9rem;
+}
+
+.wattage-pill {
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.wattage-neutral {
+  background-color: #e9ecef;
+  color: #495057;
+}
+
+.wattage-good {
+  background-color: #198754;
+  color: #fff;
+}
+
+.wattage-warning {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.wattage-danger {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.alert-animate {
+  animation: alert-fade-slide 260ms ease-out;
+}
+
+@keyframes alert-fade-slide {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 991.98px) {
+  .builder-layout {
+    gap: 1rem;
+  }
+
+  .build-summary-card {
+    position: static;
+  }
+
+  .component-image {
+    height: 150px;
+  }
 }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
