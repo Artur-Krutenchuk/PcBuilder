@@ -13,4 +13,6 @@ public sealed class Motherboard : Component
     public string? FormFactor { get; init; }
 
     public List<string> SupportedCpuGenerations { get; init; } = [];
+
+    public int? MaxRamFrequencyMhz { get; init; }
 }

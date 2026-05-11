@@ -62,7 +62,8 @@ public sealed class BuilderController : Controller
                 Motherboard = build.Motherboard?.Name,
                 Ram = build.Ram?.Name,
                 Gpu = build.Gpu?.Name,
-                Psu = build.Psu?.Name
+                Psu = build.Psu?.Name,
+                Case = build.Case?.Name
             }
         });
     }
@@ -91,6 +92,7 @@ public sealed class BuilderController : Controller
         build.Ram = FindById<Ram>(components, build.RamId);
         build.Gpu = FindById<Gpu>(components, build.GpuId);
         build.Psu = FindById<Psu>(components, build.PsuId);
+        build.Case = FindById<Case>(components, build.CaseId);
     }
 
     private static TComponent? FindById<TComponent>(IReadOnlyList<Component> components, int? id)
@@ -110,7 +112,8 @@ public sealed class BuilderController : Controller
              + (build.Motherboard?.Price ?? 0m)
              + (build.Ram?.Price ?? 0m)
              + (build.Gpu?.Price ?? 0m)
-             + (build.Psu?.Price ?? 0m);
+             + (build.Psu?.Price ?? 0m)
+             + (build.Case?.Price ?? 0m);
     }
 
     private static int CalculateEstimatedWattage(SelectedBuild build)

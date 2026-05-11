@@ -19,7 +19,56 @@ public sealed class CompatibilityService : ICompatibilityService
 
         ValidateCpuMotherboardSocket(build, result);
         ValidateRamSupport(build, result);
+        ValidateMotherboardCase(build, result);
+        ValidateGpuCase(build, result);
+        ValidateCpuGenerationMotherboard(build, result);
+        ValidateRamFrequency(build, result);
         ValidatePowerBudget(build, result);
+    private static void ValidateMotherboardCase(SelectedBuild build, CompatibilityResult result)
+    {
+        if (build.Motherboard is null || build.Case is null)
+            return;
+        var mbForm = build.Motherboard.FormFactor;
+        var caseForms = build.Case.SupportedFormFactors;
+        if (string.IsNullOrWhiteSpace(mbForm) || caseForms.Count == 0)
+            return;
+        if (!caseForms.Any(f => string.Equals(f, mbForm, StringComparison.OrdinalIgnoreCase)))
+        {
+            result.Errors.Add("Motherboard form factor is not supported by the selected case.");
+        }
+    }
+
+    private static void ValidateGpuCase(SelectedBuild build, CompatibilityResult result)
+    {
+        if (build.Gpu?.LengthMm is null || build.Case?.MaxGpuLengthMm is null)
+            return;
+        if (build.Gpu.LengthMm > build.Case.MaxGpuLengthMm)
+        {
+            result.Errors.Add("GPU is too large for the selected case.");
+        }
+    }
+
+    private static void ValidateCpuGenerationMotherboard(SelectedBuild build, CompatibilityResult result)
+    {
+        if (string.IsNullOrWhiteSpace(build.Cpu?.Generation) || build.Motherboard?.SupportedCpuGenerations is null)
+            return;
+        if (!build.Motherboard.SupportedCpuGenerations.Any(gen => string.Equals(gen, build.Cpu.Generation, StringComparison.OrdinalIgnoreCase)))
+        {
+            result.Errors.Add("Motherboard chipset does not support this CPU generation.");
+        }
+    }
+
+    private static void ValidateRamFrequency(SelectedBuild build, CompatibilityResult result)
+    {
+        if (build.Ram is null || build.Motherboard is null)
+            return;
+        if (build.Motherboard.MaxRamFrequencyMhz is null)
+            return;
+        if (build.Ram.FrequencyMhz > build.Motherboard.MaxRamFrequencyMhz)
+        {
+            result.Warnings.Add("RAM frequency exceeds motherboard supported speed and may run at lower frequency.");
+        }
+    }
 
         return result;
     }

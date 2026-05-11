@@ -540,31 +540,81 @@
   {
     "id": 504,
     "type": "case",
-    "name": "Gigabyte AORUS C300 GLASS",
-    "manufacturer": "Gigabyte",
-    "price": 189.99,
-    "imageUrl": "https://images.unsplash.com/photo-1600348712270-5af9e3590f66",
-    "supportedFormFactors": ["ATX", "Micro-ATX", "Mini-ITX"],
-    "maxGpuLengthMm": 420
+      "name": "NZXT H510",
+      "manufacturer": "NZXT",
+      "price": 89.99,
+      "imageUrl": "https://images.unsplash.com/photo-1506744038136-46273834b3fb",
+      "supportedFormFactors": ["ATX", "Micro-ATX", "Mini-ITX"],
+      "maxGpuLengthMm": 381
   },
   {
     "id": 505,
     "type": "case",
-    "name": "Corsair 2500X Micro",
-    "manufacturer": "Corsair",
-    "price": 119.99,
-    "imageUrl": "https://images.unsplash.com/photo-1587202372616-b43abea06c2a",
-    "supportedFormFactors": ["Mini-ITX"],
-    "maxGpuLengthMm": 330
+      "name": "Cooler Master MasterBox NR600",
+      "manufacturer": "Cooler Master",
+      "price": 89.99,
+      "imageUrl": "https://images.unsplash.com/photo-1465101046530-73398c7f28ca",
+      "supportedFormFactors": ["ATX", "Micro-ATX", "Mini-ITX"],
+      "maxGpuLengthMm": 410
   },
   {
     "id": 506,
     "type": "case",
-    "name": "ASUS Prime AP201",
-    "manufacturer": "ASUS",
+      "name": "Lian Li PC-O11 Dynamic",
+      "manufacturer": "Lian Li",
+      "price": 139.99,
+      "imageUrl": "https://images.unsplash.com/photo-1519125323398-675f0ddb6308",
+      "supportedFormFactors": ["ATX", "Micro-ATX", "Mini-ITX"],
+      "maxGpuLengthMm": 420
+  },
+  {
+    "id": 507,
+    "type": "case",
+    "name": "NZXT H7 Flow",
+    "manufacturer": "NZXT",
+    "price": 129.99,
+    "imageUrl": "https://images.unsplash.com/photo-1465101178521-c1a9136a3b99",
+    "supportedFormFactors": ["ATX", "Micro-ATX", "Mini-ITX"],
+    "maxGpuLengthMm": 400
+  },
+  {
+    "id": 508,
+    "type": "case",
+    "name": "Cooler Master TD500 Mesh",
+    "manufacturer": "Cooler Master",
+    "price": 119.99,
+    "imageUrl": "https://images.unsplash.com/photo-1465101046530-73398c7f28ca",
+    "supportedFormFactors": ["ATX", "Micro-ATX", "Mini-ITX"],
+    "maxGpuLengthMm": 410
+  },
+  {
+    "id": 509,
+    "type": "case",
+    "name": "Lian Li Lancool II Mesh",
+    "manufacturer": "Lian Li",
     "price": 99.99,
-    "imageUrl": "https://images.unsplash.com/photo-1517336714739-489689fd1ca8",
-    "supportedFormFactors": ["Micro-ATX", "Mini-ITX"],
-    "maxGpuLengthMm": 338
+    "imageUrl": "https://images.unsplash.com/photo-1519125323398-675f0ddb6308",
+    "supportedFormFactors": ["ATX", "Micro-ATX", "Mini-ITX"],
+    "maxGpuLengthMm": 384
+  },
+  {
+    "id": 510,
+    "type": "case",
+    "name": "Corsair 5000D Airflow",
+    "manufacturer": "Corsair",
+    "price": 164.99,
+    "imageUrl": "https://images.unsplash.com/photo-1587202372775-e229f172b9d7",
+    "supportedFormFactors": ["ATX", "Micro-ATX", "Mini-ITX"],
+    "maxGpuLengthMm": 420
+  },
+  {
+    "id": 511,
+    "type": "case",
+    "name": "Lian Li Q58",
+    "manufacturer": "Lian Li",
+    "price": 129.99,
+    "imageUrl": "https://images.unsplash.com/photo-1519125323398-675f0ddb6308",
+    "supportedFormFactors": ["Mini-ITX"],
+    "maxGpuLengthMm": 320
   }
 ]
