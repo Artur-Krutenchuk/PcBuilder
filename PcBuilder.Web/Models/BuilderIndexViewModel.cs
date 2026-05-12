@@ -15,4 +15,6 @@ public sealed class BuilderIndexViewModel
     public decimal TotalPrice { get; init; }
 
     public int EstimatedWattage { get; init; }
+
+    public IReadOnlyList<SavedBuild> SavedBuilds { get; init; } = [];
 }

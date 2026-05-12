@@ -67,7 +67,9 @@ public sealed class JsonComponentRepository : IComponentRepository
                 Threads = GetInt(element, "threads"),
                 BaseClockGhz = GetDecimal(element, "baseClockGhz"),
                 Generation = GetNullableString(element, "generation"),
-                PerformanceTier = GetNullableString(element, "performanceTier")
+                PerformanceTier = GetNullableString(element, "performanceTier"),
+                GamingScore = GetInt(element, "gamingScore"),
+                ProductivityScore = GetInt(element, "productivityScore")
             },
             "motherboard" => new Motherboard
             {
@@ -105,7 +107,9 @@ public sealed class JsonComponentRepository : IComponentRepository
                 VramGb = GetInt(element, "vramGb"),
                 RecommendedPsuWattage = GetInt(element, "recommendedPsuWattage"),
                 LengthMm = GetNullableInt(element, "lengthMm"),
-                PerformanceTier = GetNullableString(element, "performanceTier")
+                PerformanceTier = GetNullableString(element, "performanceTier"),
+                RasterScore = GetInt(element, "rasterScore"),
+                RayTracingScore = GetInt(element, "rayTracingScore")
             },
             "case" => new Case
             {
@@ -114,8 +118,21 @@ public sealed class JsonComponentRepository : IComponentRepository
                 Manufacturer = GetString(element, "manufacturer"),
                 Price = GetDecimal(element, "price"),
                 ImageUrl = GetString(element, "imageUrl"),
-                SupportedFormFactors = GetStringList(element, "supportedFormFactors"),
-                MaxGpuLengthMm = GetNullableInt(element, "maxGpuLengthMm")
+                SupportedMotherboardSizes = GetStringListFallback(element, "supportedMotherboardSizes", "supportedFormFactors"),
+                MaxGpuLengthMm = GetNullableInt(element, "maxGpuLengthMm"),
+                IncludedFans = GetInt(element, "includedFans"),
+                AirflowRating = GetInt(element, "airflowRating")
+            },
+            "cooler" => new Cooler
+            {
+                Id = GetInt(element, "id"),
+                Name = GetString(element, "name"),
+                Manufacturer = GetString(element, "manufacturer"),
+                Price = GetDecimal(element, "price"),
+                ImageUrl = GetString(element, "imageUrl"),
+                SupportedSockets = GetStringList(element, "supportedSockets"),
+                CoolingCapacityWatts = GetInt(element, "coolingCapacityWatts"),
+                NoiseLevelDb = GetDecimal(element, "noiseLevelDb")
             },
             "psu" => new Psu
             {
@@ -188,5 +205,11 @@ public sealed class JsonComponentRepository : IComponentRepository
         }
 
         return values;
+    }
+
+    private static List<string> GetStringListFallback(JsonElement element, string primary, string fallback)
+    {
+        var primaryValues = GetStringList(element, primary);
+        return primaryValues.Count > 0 ? primaryValues : GetStringList(element, fallback);
     }
 }

@@ -17,4 +17,8 @@ public sealed class Cpu : Component
     public string? Generation { get; init; }
 
     public string? PerformanceTier { get; init; }
+
+    public int GamingScore { get; init; }
+
+    public int ProductivityScore { get; init; }
 }

@@ -11,6 +11,8 @@
     "baseClockGhz": 3.7,
     "generation": "Zen 3",
     "performanceTier": "Mid-range",
+    "gamingScore": 145,
+    "productivityScore": 138,
     "price": 159.99,
     "imageUrl": "https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea"
   },
@@ -26,6 +28,8 @@
     "baseClockGhz": 3.8,
     "generation": "Zen 3",
     "performanceTier": "High",
+    "gamingScore": 168,
+    "productivityScore": 171,
     "price": 219.99,
     "imageUrl": "https://images.unsplash.com/photo-1517336714739-489689fd1ca8"
   },
@@ -41,6 +45,8 @@
     "baseClockGhz": 3.8,
     "generation": "Zen 4",
     "performanceTier": "Mid-range",
+    "gamingScore": 176,
+    "productivityScore": 162,
     "price": 229.99,
     "imageUrl": "https://images.unsplash.com/photo-1587202372775-e229f172b9d7"
   },
@@ -56,6 +62,8 @@
     "baseClockGhz": 4.2,
     "generation": "Zen 4",
     "performanceTier": "Enthusiast",
+    "gamingScore": 228,
+    "productivityScore": 205,
     "price": 389.99,
     "imageUrl": "https://images.unsplash.com/photo-1555617981-dac3880eac6e"
   },
@@ -71,6 +79,8 @@
     "baseClockGhz": 2.5,
     "generation": "Alder Lake",
     "performanceTier": "Entry",
+    "gamingScore": 132,
+    "productivityScore": 124,
     "price": 169.99,
     "imageUrl": "https://images.unsplash.com/photo-1625842268584-8f3296236761"
   },
@@ -86,6 +96,8 @@
     "baseClockGhz": 3.5,
     "generation": "Raptor Lake",
     "performanceTier": "High",
+    "gamingScore": 197,
+    "productivityScore": 214,
     "price": 309.99,
     "imageUrl": "https://images.unsplash.com/photo-1640826844110-25f9b61f9cdd"
   },
@@ -101,6 +113,8 @@
     "baseClockGhz": 3.6,
     "generation": "Alder Lake",
     "performanceTier": "High",
+    "gamingScore": 188,
+    "productivityScore": 202,
     "price": 289.99,
     "imageUrl": "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9"
   },
@@ -116,6 +130,8 @@
     "baseClockGhz": 3.4,
     "generation": "Raptor Lake Refresh",
     "performanceTier": "Enthusiast",
+    "gamingScore": 217,
+    "productivityScore": 248,
     "price": 419.99,
     "imageUrl": "https://images.unsplash.com/photo-1611078489935-0cb964de46d6"
   },
@@ -332,6 +348,8 @@
     "recommendedPsuWattage": 550,
     "lengthMm": 245,
     "performanceTier": "Mainstream",
+    "rasterScore": 142,
+    "rayTracingScore": 111,
     "price": 299.99,
     "imageUrl": "https://images.unsplash.com/photo-1591488320449-011701bb6704"
   },
@@ -345,6 +363,8 @@
     "recommendedPsuWattage": 600,
     "lengthMm": 250,
     "performanceTier": "Mainstream",
+    "rasterScore": 166,
+    "rayTracingScore": 129,
     "price": 399.99,
     "imageUrl": "https://images.unsplash.com/photo-1593642634443-44adaa06623a"
   },
@@ -358,6 +378,8 @@
     "recommendedPsuWattage": 650,
     "lengthMm": 260,
     "performanceTier": "Enthusiast",
+    "rasterScore": 206,
+    "rayTracingScore": 168,
     "price": 549.99,
     "imageUrl": "https://images.unsplash.com/photo-1600348712270-5af9e3590f66"
   },
@@ -371,6 +393,8 @@
     "recommendedPsuWattage": 700,
     "lengthMm": 265,
     "performanceTier": "Enthusiast",
+    "rasterScore": 224,
+    "rayTracingScore": 183,
     "price": 599.99,
     "imageUrl": "https://images.unsplash.com/photo-1587202372775-e229f172b9d7"
   },
@@ -384,6 +408,8 @@
     "recommendedPsuWattage": 700,
     "lengthMm": 280,
     "performanceTier": "Enthusiast",
+    "rasterScore": 214,
+    "rayTracingScore": 137,
     "price": 499.99,
     "imageUrl": "https://images.unsplash.com/photo-1625842268584-8f3296236761"
   },
@@ -397,6 +423,8 @@
     "recommendedPsuWattage": 750,
     "lengthMm": 300,
     "performanceTier": "Enthusiast",
+    "rasterScore": 262,
+    "rayTracingScore": 224,
     "price": 799.99,
     "imageUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475"
   },
@@ -410,6 +438,8 @@
     "recommendedPsuWattage": 850,
     "lengthMm": 320,
     "performanceTier": "Flagship",
+    "rasterScore": 286,
+    "rayTracingScore": 252,
     "price": 1099.99,
     "imageUrl": "https://images.unsplash.com/photo-1592664474505-6ea65f3cfd63"
   },
@@ -423,6 +453,8 @@
     "recommendedPsuWattage": 1000,
     "lengthMm": 340,
     "performanceTier": "Flagship",
+    "rasterScore": 332,
+    "rayTracingScore": 304,
     "price": 1699.99,
     "imageUrl": "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9"
   },
@@ -514,8 +546,10 @@
     "manufacturer": "Corsair",
     "price": 104.99,
     "imageUrl": "https://images.unsplash.com/photo-1587202372775-e229f172b9d7",
-    "supportedFormFactors": ["ATX", "Micro-ATX", "Mini-ITX"],
-    "maxGpuLengthMm": 360
+    "supportedMotherboardSizes": ["ATX", "Micro-ATX", "Mini-ITX"],
+    "maxGpuLengthMm": 360,
+    "includedFans": 2,
+    "airflowRating": 92
   },
   {
     "id": 502,
@@ -524,8 +558,10 @@
     "manufacturer": "ASUS",
     "price": 299.99,
     "imageUrl": "https://images.unsplash.com/photo-1562976540-1502c2145186",
-    "supportedFormFactors": ["ATX", "E-ATX", "Micro-ATX"],
-    "maxGpuLengthMm": 450
+    "supportedMotherboardSizes": ["ATX", "E-ATX", "Micro-ATX"],
+    "maxGpuLengthMm": 450,
+    "includedFans": 4,
+    "airflowRating": 88
   },
   {
     "id": 503,
@@ -534,8 +570,10 @@
     "manufacturer": "MSI",
     "price": 129.99,
     "imageUrl": "https://images.unsplash.com/photo-1591488320449-011701bb6704",
-    "supportedFormFactors": ["ATX", "Micro-ATX", "Mini-ITX"],
-    "maxGpuLengthMm": 365
+    "supportedMotherboardSizes": ["ATX", "Micro-ATX", "Mini-ITX"],
+    "maxGpuLengthMm": 365,
+    "includedFans": 4,
+    "airflowRating": 84
   },
   {
     "id": 504,
@@ -544,8 +582,10 @@
       "manufacturer": "NZXT",
       "price": 89.99,
       "imageUrl": "https://images.unsplash.com/photo-1506744038136-46273834b3fb",
-      "supportedFormFactors": ["ATX", "Micro-ATX", "Mini-ITX"],
-      "maxGpuLengthMm": 381
+      "supportedMotherboardSizes": ["ATX", "Micro-ATX", "Mini-ITX"],
+      "maxGpuLengthMm": 381,
+      "includedFans": 2,
+      "airflowRating": 62
   },
   {
     "id": 505,
@@ -554,8 +594,10 @@
       "manufacturer": "Cooler Master",
       "price": 89.99,
       "imageUrl": "https://images.unsplash.com/photo-1465101046530-73398c7f28ca",
-      "supportedFormFactors": ["ATX", "Micro-ATX", "Mini-ITX"],
-      "maxGpuLengthMm": 410
+      "supportedMotherboardSizes": ["ATX", "Micro-ATX", "Mini-ITX"],
+      "maxGpuLengthMm": 410,
+      "includedFans": 2,
+      "airflowRating": 86
   },
   {
     "id": 506,
@@ -564,8 +606,10 @@
       "manufacturer": "Lian Li",
       "price": 139.99,
       "imageUrl": "https://images.unsplash.com/photo-1519125323398-675f0ddb6308",
-      "supportedFormFactors": ["ATX", "Micro-ATX", "Mini-ITX"],
-      "maxGpuLengthMm": 420
+      "supportedMotherboardSizes": ["ATX", "Micro-ATX", "Mini-ITX"],
+      "maxGpuLengthMm": 420,
+      "includedFans": 0,
+      "airflowRating": 74
   },
   {
     "id": 507,
@@ -574,8 +618,10 @@
     "manufacturer": "NZXT",
     "price": 129.99,
     "imageUrl": "https://images.unsplash.com/photo-1465101178521-c1a9136a3b99",
-    "supportedFormFactors": ["ATX", "Micro-ATX", "Mini-ITX"],
-    "maxGpuLengthMm": 400
+    "supportedMotherboardSizes": ["ATX", "Micro-ATX", "Mini-ITX"],
+    "maxGpuLengthMm": 400,
+    "includedFans": 2,
+    "airflowRating": 90
   },
   {
     "id": 508,
@@ -584,8 +630,10 @@
     "manufacturer": "Cooler Master",
     "price": 119.99,
     "imageUrl": "https://images.unsplash.com/photo-1465101046530-73398c7f28ca",
-    "supportedFormFactors": ["ATX", "Micro-ATX", "Mini-ITX"],
-    "maxGpuLengthMm": 410
+    "supportedMotherboardSizes": ["ATX", "Micro-ATX", "Mini-ITX"],
+    "maxGpuLengthMm": 410,
+    "includedFans": 3,
+    "airflowRating": 91
   },
   {
     "id": 509,
@@ -594,8 +642,10 @@
     "manufacturer": "Lian Li",
     "price": 99.99,
     "imageUrl": "https://images.unsplash.com/photo-1519125323398-675f0ddb6308",
-    "supportedFormFactors": ["ATX", "Micro-ATX", "Mini-ITX"],
-    "maxGpuLengthMm": 384
+    "supportedMotherboardSizes": ["ATX", "Micro-ATX", "Mini-ITX"],
+    "maxGpuLengthMm": 384,
+    "includedFans": 3,
+    "airflowRating": 93
   },
   {
     "id": 510,
@@ -604,8 +654,10 @@
     "manufacturer": "Corsair",
     "price": 164.99,
     "imageUrl": "https://images.unsplash.com/photo-1587202372775-e229f172b9d7",
-    "supportedFormFactors": ["ATX", "Micro-ATX", "Mini-ITX"],
-    "maxGpuLengthMm": 420
+    "supportedMotherboardSizes": ["ATX", "Micro-ATX", "Mini-ITX"],
+    "maxGpuLengthMm": 420,
+    "includedFans": 2,
+    "airflowRating": 94
   },
   {
     "id": 511,
@@ -614,7 +666,75 @@
     "manufacturer": "Lian Li",
     "price": 129.99,
     "imageUrl": "https://images.unsplash.com/photo-1519125323398-675f0ddb6308",
-    "supportedFormFactors": ["Mini-ITX"],
-    "maxGpuLengthMm": 320
+    "supportedMotherboardSizes": ["Mini-ITX"],
+    "maxGpuLengthMm": 320,
+    "includedFans": 0,
+    "airflowRating": 66
+  },
+  {
+    "id": 601,
+    "type": "cooler",
+    "name": "Cooler Master Hyper 212 Black Edition",
+    "manufacturer": "Cooler Master",
+    "supportedSockets": ["AM4", "AM5", "LGA1700"],
+    "coolingCapacityWatts": 150,
+    "noiseLevelDb": 28.0,
+    "price": 39.99,
+    "imageUrl": "https://images.unsplash.com/photo-1624705002806-5d72df19c3ad"
+  },
+  {
+    "id": 602,
+    "type": "cooler",
+    "name": "Noctua NH-D15",
+    "manufacturer": "Noctua",
+    "supportedSockets": ["AM4", "AM5", "LGA1700"],
+    "coolingCapacityWatts": 250,
+    "noiseLevelDb": 24.6,
+    "price": 109.99,
+    "imageUrl": "https://images.unsplash.com/photo-1591488320449-011701bb6704"
+  },
+  {
+    "id": 603,
+    "type": "cooler",
+    "name": "be quiet! Dark Rock Pro 4",
+    "manufacturer": "be quiet!",
+    "supportedSockets": ["AM4", "AM5", "LGA1700"],
+    "coolingCapacityWatts": 240,
+    "noiseLevelDb": 24.3,
+    "price": 99.99,
+    "imageUrl": "https://images.unsplash.com/photo-1611078489935-0cb964de46d6"
+  },
+  {
+    "id": 604,
+    "type": "cooler",
+    "name": "Corsair iCUE H100i Elite Capellix (240mm AIO)",
+    "manufacturer": "Corsair",
+    "supportedSockets": ["AM4", "AM5", "LGA1700"],
+    "coolingCapacityWatts": 280,
+    "noiseLevelDb": 31.5,
+    "price": 149.99,
+    "imageUrl": "https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea"
+  },
+  {
+    "id": 605,
+    "type": "cooler",
+    "name": "DeepCool AK620",
+    "manufacturer": "DeepCool",
+    "supportedSockets": ["AM4", "AM5", "LGA1700"],
+    "coolingCapacityWatts": 230,
+    "noiseLevelDb": 28.0,
+    "price": 64.99,
+    "imageUrl": "https://images.unsplash.com/photo-1587202372616-b43abea06c2a"
+  },
+  {
+    "id": 606,
+    "type": "cooler",
+    "name": "AMD Wraith Stealth (Stock Cooler)",
+    "manufacturer": "AMD",
+    "supportedSockets": ["AM4", "AM5"],
+    "coolingCapacityWatts": 85,
+    "noiseLevelDb": 32.0,
+    "price": 9.99,
+    "imageUrl": "https://images.unsplash.com/photo-1587202372775-e229f172b9d7"
   }
 ]

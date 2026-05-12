@@ -131,3 +131,39 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+
+.compatible-option {
+  opacity: 1;
+}
+
+.incompatible-option {
+  opacity: 0.5;
+}
+
+.recommended-option {
+  background-color: #d1e7dd;
+  border: 1px solid #198754;
+}
+
+.selected-incompatible {
+  border-color: #dc3545 !important;
+}
+
+.incompatible-warning-icon {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0.45rem;
+  color: #dc3545;
+  font-weight: 700;
+}
+
+.comparison-table .comparison-better {
+  background-color: #d1e7dd;
+  color: #0f5132;
+  font-weight: 600;
+}
+
+.comparison-table .comparison-worse {
+  background-color: #f8d7da;
+  color: #842029;
+}

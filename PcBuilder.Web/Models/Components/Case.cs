@@ -4,7 +4,11 @@ public sealed class Case : Component
 {
     public override string Type => "case";
 
-    public List<string> SupportedFormFactors { get; init; } = [];
-
     public int? MaxGpuLengthMm { get; init; }
+
+    public List<string> SupportedMotherboardSizes { get; init; } = [];
+
+    public int IncludedFans { get; init; }
+
+    public int AirflowRating { get; init; }
 }

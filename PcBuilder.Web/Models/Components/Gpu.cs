@@ -13,4 +13,8 @@ public sealed class Gpu : Component
     public int? LengthMm { get; init; }
 
     public string? PerformanceTier { get; init; }
+
+    public int RasterScore { get; init; }
+
+    public int RayTracingScore { get; init; }
 }
