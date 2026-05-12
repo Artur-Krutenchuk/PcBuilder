@@ -201,6 +201,32 @@ else
                         </div>
                         <div id="validation-spinner" class="spinner-border text-primary d-none" role="status" aria-hidden="true"></div>
                     </div>
+
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <div class="border-top mt-3 pt-3 save-options-panel">
+                            <label class="form-label small fw-semibold mb-1" for="save-build-name">Save options</label>
+                            <div class="row g-2 align-items-center">
+                                <div class="col-12 col-md-6">
+                                    <input type="text"
+                                           class="form-control form-control-sm"
+                                           id="save-build-name"
+                                           name="buildName"
+                                           maxlength="120"
+                                           autocomplete="off"
+                                           placeholder="Build name (your saves and gallery)" />
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <div class="form-check mt-1 mt-md-0">
+                                        <input class="form-check-input" type="checkbox" value="true" id="save-build-public" name="isPublic" />
+                                        <label class="form-check-label small" for="save-build-public">
+                                            Share publicly in gallery
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
                 </div>
             </form>
         </div>
@@ -340,7 +366,7 @@ else
         </div>
     </div>
 
-    <div class="card shadow-sm mt-4 border-0">
+    <div id="saved-builds" class="card shadow-sm mt-4 border-0 scroll-margin-top">
         <div class="card-header bg-white border-0 d-flex align-items-center justify-content-between">
             <h2 class="h5 mb-0 fw-semibold">Load Saved Builds</h2>
             <button id="refresh-saved-builds-btn" type="button" class="btn btn-sm btn-outline-secondary">Refresh</button>
@@ -360,9 +386,17 @@ else
                         <div class="col-12 col-md-6 col-xl-4">
                             <div class="card border h-100 saved-build-card">
                                 <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                                        <h3 class="h6 fw-semibold mb-0 flex-grow-1">@savedBuild.DisplayName</h3>
+                                        <span class="badge @(savedBuild.IsPublic ? "text-bg-success" : "text-bg-secondary") flex-shrink-0">@(savedBuild.IsPublic ? "Public" : "Private")</span>
+                                    </div>
+                                    <div class="d-flex flex-wrap gap-1 mb-2">
                                         <span class="badge text-bg-primary">@savedBuild.BuildCategory</span>
                                         <span class="badge text-bg-dark">@savedBuild.CompatibilityPercentage%</span>
+                                        @if (savedBuild.EstimatedFps1080p > 0)
+                                        {
+                                            <span class="badge text-bg-info text-dark">@savedBuild.EstimatedFps1080p FPS · 1080p</span>
+                                        }
                                     </div>
                                     <div class="small text-secondary mb-1">Total price: <strong>$@savedBuild.TotalPrice.ToString("0.00")</strong></div>
                                     <div class="small text-secondary mb-1">Estimated wattage: <strong>@savedBuild.EstimatedWattage W</strong></div>
@@ -532,7 +566,8 @@ else
             saveBuildUrl: '@Url.Action("SaveBuild", "Builder")',
             savedBuildsUrl: '@Url.Action("SavedBuilds", "Builder")',
             compareUrl: '@Url.Action("Compare", "Builder")',
-            exportBuildUrl: '@Url.Action("ExportBuild", "Builder")'
+            exportBuildUrl: '@Url.Action("ExportBuild", "Builder")',
+            isAuthenticated: @(User?.Identity?.IsAuthenticated == true ? "true" : "false")
         };
     </script>
 }

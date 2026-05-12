@@ -5,6 +5,8 @@ namespace PcBuilder.Web.Repositories;
 
 public sealed class JsonComponentRepository : IComponentRepository
 {
+    private static readonly SemaphoreSlim FileLock = new(1, 1);
+
     private readonly IWebHostEnvironment _environment;
     private readonly ILogger<JsonComponentRepository> _logger;
 
@@ -16,7 +18,68 @@ public sealed class JsonComponentRepository : IComponentRepository
 
     public async Task<IReadOnlyList<Component>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        var filePath = Path.Combine(_environment.ContentRootPath, "Data", "buildcores.json");
+        await FileLock.WaitAsync(cancellationToken);
+        try
+        {
+            return await ReadCatalogCoreAsync(cancellationToken);
+        }
+        finally
+        {
+            FileLock.Release();
+        }
+    }
+
+    public async Task SaveCatalogAsync(IReadOnlyList<Component> components, CancellationToken cancellationToken = default)
+    {
+        await FileLock.WaitAsync(cancellationToken);
+        try
+        {
+            var filePath = GetFilePath();
+            var directoryPath = Path.GetDirectoryName(filePath);
+            if (!string.IsNullOrWhiteSpace(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+
+            var ordered = components.OrderBy(c => c.Type, StringComparer.OrdinalIgnoreCase).ThenBy(c => c.Id).ToList();
+            var tempPath = Path.Combine(Path.GetTempPath(), $"buildcores-{Guid.NewGuid():N}.tmp.json");
+            await using (var stream = File.Create(tempPath))
+            {
+                await using var writer = new Utf8JsonWriter(stream, new JsonWriterOptions { Indented = true });
+                writer.WriteStartArray();
+                foreach (var component in ordered)
+                {
+                    WriteComponent(writer, component);
+                }
+
+                writer.WriteEndArray();
+            }
+
+            try
+            {
+                File.Move(tempPath, filePath, overwrite: true);
+            }
+            catch
+            {
+                if (File.Exists(tempPath))
+                {
+                    File.Delete(tempPath);
+                }
+
+                throw;
+            }
+
+            _logger.LogInformation("Wrote {Count} components to catalog.", ordered.Count);
+        }
+        finally
+        {
+            FileLock.Release();
+        }
+    }
+
+    private async Task<List<Component>> ReadCatalogCoreAsync(CancellationToken cancellationToken)
+    {
+        var filePath = GetFilePath();
         if (!File.Exists(filePath))
         {
             _logger.LogWarning("Components JSON file does not exist: {Path}", filePath);
@@ -48,6 +111,169 @@ public sealed class JsonComponentRepository : IComponentRepository
         }
 
         return components;
+    }
+
+    private string GetFilePath()
+    {
+        return Path.Combine(_environment.ContentRootPath, "Data", "buildcores.json");
+    }
+
+    private static void WriteComponent(Utf8JsonWriter w, Component component)
+    {
+        switch (component)
+        {
+            case Cpu cpu:
+                w.WriteStartObject();
+                w.WriteString("type", "cpu");
+                w.WriteNumber("id", cpu.Id);
+                w.WriteString("name", cpu.Name);
+                w.WriteString("manufacturer", cpu.Manufacturer);
+                w.WriteNumber("price", cpu.Price);
+                w.WriteString("imageUrl", cpu.ImageUrl);
+                w.WriteString("socket", cpu.Socket);
+                w.WriteNumber("tdpWatts", cpu.TdpWatts);
+                w.WriteNumber("cores", cpu.Cores);
+                w.WriteNumber("threads", cpu.Threads);
+                w.WriteNumber("baseClockGhz", cpu.BaseClockGhz);
+                WriteNullableString(w, "generation", cpu.Generation);
+                WriteNullableString(w, "performanceTier", cpu.PerformanceTier);
+                w.WriteNumber("gamingScore", cpu.GamingScore);
+                w.WriteNumber("productivityScore", cpu.ProductivityScore);
+                w.WriteEndObject();
+                break;
+
+            case Motherboard mb:
+                w.WriteStartObject();
+                w.WriteString("type", "motherboard");
+                w.WriteNumber("id", mb.Id);
+                w.WriteString("name", mb.Name);
+                w.WriteString("manufacturer", mb.Manufacturer);
+                w.WriteNumber("price", mb.Price);
+                w.WriteString("imageUrl", mb.ImageUrl);
+                w.WriteString("socket", mb.Socket);
+                WriteStringArray(w, "supportedRamTypes", mb.SupportedRamTypes);
+                w.WriteString("chipset", mb.Chipset);
+                WriteNullableString(w, "formFactor", mb.FormFactor);
+                WriteStringArray(w, "supportedCpuGenerations", mb.SupportedCpuGenerations);
+                if (mb.MaxRamFrequencyMhz is { } maxMhz)
+                {
+                    w.WriteNumber("maxRamFrequencyMhz", maxMhz);
+                }
+
+                w.WriteEndObject();
+                break;
+
+            case Ram ram:
+                w.WriteStartObject();
+                w.WriteString("type", "ram");
+                w.WriteNumber("id", ram.Id);
+                w.WriteString("name", ram.Name);
+                w.WriteString("manufacturer", ram.Manufacturer);
+                w.WriteNumber("price", ram.Price);
+                w.WriteString("imageUrl", ram.ImageUrl);
+                w.WriteString("ramType", ram.RamType);
+                w.WriteNumber("capacityGb", ram.CapacityGb);
+                w.WriteNumber("frequencyMhz", ram.FrequencyMhz);
+                WriteNullableString(w, "performanceTier", ram.PerformanceTier);
+                w.WriteEndObject();
+                break;
+
+            case Gpu gpu:
+                w.WriteStartObject();
+                w.WriteString("type", "gpu");
+                w.WriteNumber("id", gpu.Id);
+                w.WriteString("name", gpu.Name);
+                w.WriteString("manufacturer", gpu.Manufacturer);
+                w.WriteNumber("price", gpu.Price);
+                w.WriteString("imageUrl", gpu.ImageUrl);
+                w.WriteNumber("tdpWatts", gpu.TdpWatts);
+                w.WriteNumber("vramGb", gpu.VramGb);
+                w.WriteNumber("recommendedPsuWattage", gpu.RecommendedPsuWattage);
+                if (gpu.LengthMm is { } len)
+                {
+                    w.WriteNumber("lengthMm", len);
+                }
+
+                WriteNullableString(w, "performanceTier", gpu.PerformanceTier);
+                w.WriteNumber("rasterScore", gpu.RasterScore);
+                w.WriteNumber("rayTracingScore", gpu.RayTracingScore);
+                w.WriteEndObject();
+                break;
+
+            case Psu psu:
+                w.WriteStartObject();
+                w.WriteString("type", "psu");
+                w.WriteNumber("id", psu.Id);
+                w.WriteString("name", psu.Name);
+                w.WriteString("manufacturer", psu.Manufacturer);
+                w.WriteNumber("price", psu.Price);
+                w.WriteString("imageUrl", psu.ImageUrl);
+                w.WriteNumber("wattage", psu.Wattage);
+                w.WriteString("efficiencyRating", psu.EfficiencyRating);
+                w.WriteEndObject();
+                break;
+
+            case Case pcCase:
+                w.WriteStartObject();
+                w.WriteString("type", "case");
+                w.WriteNumber("id", pcCase.Id);
+                w.WriteString("name", pcCase.Name);
+                w.WriteString("manufacturer", pcCase.Manufacturer);
+                w.WriteNumber("price", pcCase.Price);
+                w.WriteString("imageUrl", pcCase.ImageUrl);
+                WriteStringArray(w, "supportedMotherboardSizes", pcCase.SupportedMotherboardSizes);
+                if (pcCase.MaxGpuLengthMm is { } maxGpu)
+                {
+                    w.WriteNumber("maxGpuLengthMm", maxGpu);
+                }
+
+                w.WriteNumber("includedFans", pcCase.IncludedFans);
+                w.WriteNumber("airflowRating", pcCase.AirflowRating);
+                w.WriteEndObject();
+                break;
+
+            case Cooler cooler:
+                w.WriteStartObject();
+                w.WriteString("type", "cooler");
+                w.WriteNumber("id", cooler.Id);
+                w.WriteString("name", cooler.Name);
+                w.WriteString("manufacturer", cooler.Manufacturer);
+                w.WriteNumber("price", cooler.Price);
+                w.WriteString("imageUrl", cooler.ImageUrl);
+                WriteStringArray(w, "supportedSockets", cooler.SupportedSockets);
+                w.WriteNumber("coolingCapacityWatts", cooler.CoolingCapacityWatts);
+                w.WriteNumber("noiseLevelDb", cooler.NoiseLevelDb);
+                w.WriteEndObject();
+                break;
+
+            default:
+                throw new InvalidOperationException($"Unsupported component type: {component.GetType().Name}");
+        }
+    }
+
+    private static void WriteNullableString(Utf8JsonWriter w, string name, string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return;
+        }
+
+        w.WriteString(name, value);
+    }
+
+    private static void WriteStringArray(Utf8JsonWriter w, string name, IReadOnlyList<string> values)
+    {
+        w.WritePropertyName(name);
+        w.WriteStartArray();
+        foreach (var v in values)
+        {
+            if (!string.IsNullOrWhiteSpace(v))
+            {
+                w.WriteStringValue(v.Trim());
+            }
+        }
+
+        w.WriteEndArray();
     }
 
     private static Component? CreateComponent(string type, JsonElement element)
@@ -82,7 +308,8 @@ public sealed class JsonComponentRepository : IComponentRepository
                 SupportedRamTypes = GetStringList(element, "supportedRamTypes"),
                 Chipset = GetString(element, "chipset"),
                 FormFactor = GetNullableString(element, "formFactor"),
-                SupportedCpuGenerations = GetStringList(element, "supportedCpuGenerations")
+                SupportedCpuGenerations = GetStringList(element, "supportedCpuGenerations"),
+                MaxRamFrequencyMhz = GetNullableInt(element, "maxRamFrequencyMhz")
             },
             "ram" => new Ram
             {

@@ -1,0 +1,183 @@
+@model AdminComponentEditorViewModel
+@{
+    ViewData["Title"] = Model.Id == 0 ? "Create component" : "Edit component";
+    var isEdit = Model.Id != 0;
+}
+
+<h1 class="h3 fw-bold mb-4">@ViewData["Title"]</h1>
+
+<form asp-area="Admin" asp-controller="Catalog" asp-action="@(isEdit ? "Edit" : "Create")" method="post" class="card border-0 shadow-sm rounded-4 overflow-hidden" id="admin-component-form">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+
+    <div class="card-body p-4 border-bottom bg-white">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label asp-for="ComponentType" class="form-label fw-semibold"></label>
+                @if (isEdit)
+                {
+                    <input type="hidden" asp-for="ComponentType" />
+                    <input type="text" class="form-control" value="@Model.ComponentType" disabled readonly />
+                }
+                else
+                {
+                    <select asp-for="ComponentType" class="form-select" id="ComponentType">
+                        <option value="cpu">CPU</option>
+                        <option value="motherboard">Motherboard</option>
+                        <option value="ram">RAM</option>
+                        <option value="gpu">GPU</option>
+                        <option value="psu">PSU</option>
+                        <option value="case">Case</option>
+                        <option value="cooler">Cooler</option>
+                    </select>
+                }
+            </div>
+            <div class="col-md-8 text-secondary small">
+                Toggle type fields below. Only the selected type’s inputs are submitted.
+            </div>
+        </div>
+
+        <div asp-validation-summary="ModelOnly" class="text-danger small mt-3 mb-0"></div>
+
+        <hr class="my-4" />
+
+        <h2 class="h6 fw-bold text-uppercase text-secondary mb-3">Common</h2>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label asp-for="Name" class="form-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Manufacturer" class="form-label"></label>
+                <input asp-for="Manufacturer" class="form-control" />
+                <span asp-validation-for="Manufacturer" class="text-danger small"></span>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="Price" class="form-label"></label>
+                <input asp-for="Price" class="form-control" type="number" step="0.01" min="0" />
+            </div>
+            <div class="col-md-8">
+                <label asp-for="ImageUrl" class="form-label"></label>
+                <input asp-for="ImageUrl" class="form-control" />
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body p-4 bg-body-tertiary border-bottom d-none" data-type-fields="cpu motherboard">
+        <h2 class="h6 fw-bold text-primary mb-3"><i class="bi bi-plug me-1"></i> Socket</h2>
+        <label asp-for="Socket" class="form-label"></label>
+        <input asp-for="Socket" class="form-control" />
+    </div>
+
+    <div class="card-body p-4 bg-body-tertiary border-bottom d-none" data-type-fields="cpu">
+        <h2 class="h6 fw-bold text-primary mb-3"><i class="bi bi-cpu me-1"></i> CPU fields</h2>
+        <div class="row g-3">
+            <div class="col-md-4"><label asp-for="TdpWatts" class="form-label"></label><input asp-for="TdpWatts" class="form-control" type="number" /></div>
+            <div class="col-md-4"><label asp-for="BaseClockGhz" class="form-label"></label><input asp-for="BaseClockGhz" class="form-control" step="0.01" /></div>
+            <div class="col-md-3"><label asp-for="Cores" class="form-label"></label><input asp-for="Cores" class="form-control" type="number" /></div>
+            <div class="col-md-3"><label asp-for="Threads" class="form-label"></label><input asp-for="Threads" class="form-control" type="number" /></div>
+            <div class="col-md-3"><label asp-for="GamingScore" class="form-label"></label><input asp-for="GamingScore" class="form-control" type="number" /></div>
+            <div class="col-md-3"><label asp-for="ProductivityScore" class="form-label"></label><input asp-for="ProductivityScore" class="form-control" type="number" /></div>
+            <div class="col-md-6"><label asp-for="Generation" class="form-label"></label><input asp-for="Generation" class="form-control" /></div>
+            <div class="col-md-6"><label asp-for="PerformanceTier" class="form-label"></label><input asp-for="PerformanceTier" class="form-control" /></div>
+        </div>
+    </div>
+
+    <div class="card-body p-4 bg-body-tertiary border-bottom d-none" data-type-fields="motherboard">
+        <h2 class="h6 fw-bold text-primary mb-3"><i class="bi bi-motherboard me-1"></i> Motherboard fields</h2>
+        <div class="row g-3">
+            <div class="col-md-8"><label asp-for="Chipset" class="form-label"></label><input asp-for="Chipset" class="form-control" /></div>
+            <div class="col-md-6"><label asp-for="FormFactor" class="form-label"></label><input asp-for="FormFactor" class="form-control" /></div>
+            <div class="col-md-6"><label asp-for="MaxRamFrequencyMhz" class="form-label"></label><input asp-for="MaxRamFrequencyMhz" class="form-control" type="number" /></div>
+            <div class="col-12"><label asp-for="SupportedRamTypesCsv" class="form-label"></label><input asp-for="SupportedRamTypesCsv" class="form-control" placeholder="DDR4, DDR5" /></div>
+            <div class="col-12"><label asp-for="SupportedCpuGenerationsCsv" class="form-label"></label><input asp-for="SupportedCpuGenerationsCsv" class="form-control" /></div>
+        </div>
+    </div>
+
+    <div class="card-body p-4 bg-body-tertiary border-bottom d-none" data-type-fields="ram">
+        <h2 class="h6 fw-bold text-primary mb-3"><i class="bi bi-hdd-stack me-1"></i> RAM fields</h2>
+        <div class="row g-3">
+            <div class="col-md-4"><label asp-for="RamType" class="form-label"></label><input asp-for="RamType" class="form-control" /></div>
+            <div class="col-md-4"><label asp-for="CapacityGb" class="form-label"></label><input asp-for="CapacityGb" class="form-control" type="number" /></div>
+            <div class="col-md-4"><label asp-for="FrequencyMhz" class="form-label"></label><input asp-for="FrequencyMhz" class="form-control" type="number" /></div>
+            <div class="col-md-6"><label asp-for="PerformanceTier" class="form-label"></label><input asp-for="PerformanceTier" class="form-control" /></div>
+        </div>
+    </div>
+
+    <div class="card-body p-4 bg-body-tertiary border-bottom d-none" data-type-fields="gpu">
+        <h2 class="h6 fw-bold text-primary mb-3"><i class="bi bi-gpu-card me-1"></i> GPU fields</h2>
+        <div class="row g-3">
+            <div class="col-md-4"><label asp-for="TdpWatts" class="form-label"></label><input asp-for="TdpWatts" class="form-control" type="number" /></div>
+            <div class="col-md-4"><label asp-for="VramGb" class="form-label"></label><input asp-for="VramGb" class="form-control" type="number" /></div>
+            <div class="col-md-4"><label asp-for="RecommendedPsuWattage" class="form-label"></label><input asp-for="RecommendedPsuWattage" class="form-control" type="number" /></div>
+            <div class="col-md-4"><label asp-for="LengthMm" class="form-label"></label><input asp-for="LengthMm" class="form-control" type="number" /></div>
+            <div class="col-md-4"><label asp-for="RasterScore" class="form-label"></label><input asp-for="RasterScore" class="form-control" type="number" /></div>
+            <div class="col-md-4"><label asp-for="RayTracingScore" class="form-label"></label><input asp-for="RayTracingScore" class="form-control" type="number" /></div>
+            <div class="col-md-6"><label asp-for="PerformanceTier" class="form-label"></label><input asp-for="PerformanceTier" class="form-control" /></div>
+        </div>
+    </div>
+
+    <div class="card-body p-4 bg-body-tertiary border-bottom d-none" data-type-fields="psu">
+        <h2 class="h6 fw-bold text-primary mb-3"><i class="bi bi-lightning-charge me-1"></i> PSU fields</h2>
+        <div class="row g-3">
+            <div class="col-md-6"><label asp-for="Wattage" class="form-label"></label><input asp-for="Wattage" class="form-control" type="number" /></div>
+            <div class="col-md-6"><label asp-for="EfficiencyRating" class="form-label"></label><input asp-for="EfficiencyRating" class="form-control" /></div>
+        </div>
+    </div>
+
+    <div class="card-body p-4 bg-body-tertiary border-bottom d-none" data-type-fields="case">
+        <h2 class="h6 fw-bold text-primary mb-3"><i class="bi bi-pc-display-horizontal me-1"></i> Case fields</h2>
+        <div class="row g-3">
+            <div class="col-12"><label asp-for="SupportedMotherboardSizesCsv" class="form-label"></label><input asp-for="SupportedMotherboardSizesCsv" class="form-control" placeholder="ATX, Micro-ATX" /></div>
+            <div class="col-md-4"><label asp-for="MaxGpuLengthMm" class="form-label"></label><input asp-for="MaxGpuLengthMm" class="form-control" type="number" /></div>
+            <div class="col-md-4"><label asp-for="IncludedFans" class="form-label"></label><input asp-for="IncludedFans" class="form-control" type="number" /></div>
+            <div class="col-md-4"><label asp-for="AirflowRating" class="form-label"></label><input asp-for="AirflowRating" class="form-control" type="number" /></div>
+        </div>
+    </div>
+
+    <div class="card-body p-4 bg-body-tertiary border-bottom d-none" data-type-fields="cooler">
+        <h2 class="h6 fw-bold text-primary mb-3"><i class="bi bi-fan me-1"></i> Cooler fields</h2>
+        <div class="row g-3">
+            <div class="col-12"><label asp-for="SupportedSocketsCsv" class="form-label"></label><input asp-for="SupportedSocketsCsv" class="form-control" placeholder="AM4, AM5, LGA1700" /></div>
+            <div class="col-md-6"><label asp-for="CoolingCapacityWatts" class="form-label"></label><input asp-for="CoolingCapacityWatts" class="form-control" type="number" /></div>
+            <div class="col-md-6"><label asp-for="NoiseLevelDb" class="form-label"></label><input asp-for="NoiseLevelDb" class="form-control" step="0.1" /></div>
+        </div>
+    </div>
+
+    <div class="card-body p-4 bg-white d-flex flex-wrap gap-2 justify-content-between">
+        <a class="btn btn-outline-secondary" asp-area="Admin" asp-controller="Catalog" asp-action="Index">Cancel</a>
+        <button type="submit" class="btn btn-primary px-4">@(isEdit ? "Save changes" : "Create component")</button>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="~/Views/Shared/_ValidationScriptsPartial.cshtml" />
+    <script>
+        (function () {
+            const typeSelect = document.getElementById("ComponentType");
+
+            function syncTypeFields() {
+                const type = typeSelect ? typeSelect.value : "@Model.ComponentType";
+                document.querySelectorAll("[data-type-fields]").forEach(section => {
+                    const types = (section.getAttribute("data-type-fields") || "")
+                        .split(/\s+/)
+                        .map(t => t.trim())
+                        .filter(Boolean);
+                    const match = types.includes(type);
+                    section.classList.toggle("d-none", !match);
+                    section.querySelectorAll("input,select,textarea").forEach(el => {
+                        if (el.type === "hidden") return;
+                        el.disabled = !match;
+                    });
+                });
+            }
+
+            if (typeSelect) {
+                typeSelect.addEventListener("change", syncTypeFields);
+            }
+
+            syncTypeFields();
+        })();
+    </script>
+}
