@@ -1,6 +1,7 @@
 @model PcBuilder.Web.Models.GalleryIndexViewModel
 @{
-    ViewData["Title"] = "Public gallery";
+    ViewData["Title"] ??= "Public gallery";
+    var galleryController = ViewData["GalleryFormController"] as string ?? "Gallery";
     var sortOptions = new (string Value, string Label)[]
     {
         ("newest", "Newest first"),
@@ -31,7 +32,7 @@
 
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-body p-3 p-md-4">
-            <form method="get" asp-controller="Gallery" asp-action="Index" class="row g-3 align-items-end">
+            <form method="get" asp-controller="@galleryController" asp-action="Index" class="row g-3 align-items-end">
                 <div class="col-12 col-md-4 col-lg-4">
                     <label class="form-label small fw-semibold mb-1" for="gallery-search">Search</label>
                     <div class="input-group">
@@ -87,7 +88,7 @@
                 </div>
                 <div class="col-12 col-lg-2 d-flex gap-2">
                     <button type="submit" class="btn btn-dark flex-grow-1">Apply</button>
-                    <a class="btn btn-outline-secondary" asp-controller="Gallery" asp-action="Index" title="Reset filters">Reset</a>
+                    <a class="btn btn-outline-secondary" asp-controller="@galleryController" asp-action="Index" title="Reset filters">Reset</a>
                 </div>
             </form>
         </div>

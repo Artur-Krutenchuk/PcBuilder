@@ -9,4 +9,6 @@ public interface ISavedBuildService
     Task<IReadOnlyList<SavedBuild>> GetPublicGalleryAsync(CancellationToken cancellationToken = default);
 
     Task SaveAsync(SavedBuild build, CancellationToken cancellationToken = default);
+
+    Task<bool> DeleteAsync(string id, string userId, CancellationToken cancellationToken = default);
 }

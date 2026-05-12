@@ -31,35 +31,17 @@
                             <a class="nav-link text-dark" asp-controller="Gallery" asp-action="Index">Gallery</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="PopularBuilds" asp-action="Index">Popular Builds</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Components" asp-action="Index">Catalog</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Statistics" asp-action="Index">Statistics</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
-                    </ul>
-
-                    <ul class="navbar-nav">
-                        @if (User?.Identity?.IsAuthenticated == true)
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Profile" asp-action="Index">Profile</a>
-                            </li>
-                            <li class="nav-item">
-                                <span class="nav-link text-secondary">Hello, <strong>@(User.Identity?.Name ?? "User")</strong></span>
-                            </li>
-                            <li class="nav-item">
-                                <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
-                                    @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-link nav-link text-dark">Logout</button>
-                                </form>
-                            </li>
-                        }
-                        else
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Login</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Register">Register</a>
-                            </li>
-                        }
                     </ul>
 
                     <ul class="navbar-nav">
@@ -71,6 +53,9 @@
                                     <a class="nav-link text-dark fw-semibold" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Admin</a>
                                 </li>
                             }
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="MyBuilds" asp-action="Index">My Builds</a>
+                            </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="Profile" asp-action="Index">Profile</a>
                             </li>

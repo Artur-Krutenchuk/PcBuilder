@@ -13,19 +13,21 @@ namespace PcBuilder.Web.Controllers;
 
 public sealed class BuilderController : Controller
 {
-    private const int BaseSystemReserveWatts = 100;
     private readonly IComponentService _componentService;
     private readonly ICompatibilityService _compatibilityService;
     private readonly ISavedBuildService _savedBuildService;
+    private readonly IBuildService _buildService;
 
     public BuilderController(
         IComponentService componentService,
         ICompatibilityService compatibilityService,
-        ISavedBuildService savedBuildService)
+        ISavedBuildService savedBuildService,
+        IBuildService buildService)
     {
         _componentService = componentService;
         _compatibilityService = compatibilityService;
         _savedBuildService = savedBuildService;
+        _buildService = buildService;
     }
 
     [HttpGet]
@@ -53,12 +55,12 @@ public sealed class BuilderController : Controller
             CaseId = caseId,
             CoolerId = coolerId
         };
-        HydrateBuildSelections(selection, components);
+        _buildService.HydrateBuild(selection, components);
         var compatibilityPreview = selection.CpuId is not null || selection.GpuId is not null
             ? _compatibilityService.Check(selection)
             : null;
-        var totalPrice = CalculateTotalPrice(selection);
-        var estimatedWattage = CalculateEstimatedWattage(selection);
+        var totalPrice = _buildService.CalculateTotalPrice(selection);
+        var estimatedWattage = _buildService.CalculateEstimatedWattage(selection);
         var model = BuildViewModel(
             components,
             savedBuilds,
@@ -79,15 +81,15 @@ public sealed class BuilderController : Controller
         var savedBuilds = User.Identity?.IsAuthenticated == true
             ? await _savedBuildService.GetAllAsync(GetUserId(), cancellationToken)
             : [];
-        HydrateBuildSelections(build, components);
+        _buildService.HydrateBuild(build, components);
         var compatibilityResult = _compatibilityService.Check(build);
         var model = BuildViewModel(
             components,
             savedBuilds,
             build,
             compatibilityResult,
-            CalculateTotalPrice(build),
-            CalculateEstimatedWattage(build));
+            _buildService.CalculateTotalPrice(build),
+            _buildService.CalculateEstimatedWattage(build));
         return View(model);
     }
 
@@ -96,11 +98,11 @@ public sealed class BuilderController : Controller
     public async Task<IActionResult> Validate([FromForm] SelectedBuild build, CancellationToken cancellationToken)
     {
         var components = await _componentService.GetAllAsync(cancellationToken);
-        HydrateBuildSelections(build, components);
+        _buildService.HydrateBuild(build, components);
 
         var compatibilityResult = _compatibilityService.Check(build);
-        var totalPrice = CalculateTotalPrice(build);
-        var estimatedWattage = CalculateEstimatedWattage(build);
+        var totalPrice = _buildService.CalculateTotalPrice(build);
+        var estimatedWattage = _buildService.CalculateEstimatedWattage(build);
 
         return Json(new
         {
@@ -149,11 +151,11 @@ public sealed class BuilderController : Controller
         CancellationToken cancellationToken)
     {
         var components = await _componentService.GetAllAsync(cancellationToken);
-        HydrateBuildSelections(build, components);
+        _buildService.HydrateBuild(build, components);
 
         var compatibilityResult = _compatibilityService.Check(build);
-        var totalPrice = CalculateTotalPrice(build);
-        var estimatedWattage = CalculateEstimatedWattage(build);
+        var totalPrice = _buildService.CalculateTotalPrice(build);
+        var estimatedWattage = _buildService.CalculateEstimatedWattage(build);
 
         var trimmedName = string.IsNullOrWhiteSpace(buildName)
             ? string.Empty
@@ -235,7 +237,7 @@ public sealed class BuilderController : Controller
             .Select(ram => ram.Id)
             .ToList();
 
-        var estimatedWattage = CalculateEstimatedWattage(
+        var estimatedWattage = _buildService.CalculateEstimatedWattage(
             selectedCpu?.TdpWatts ?? 0,
             selectedGpu?.TdpWatts ?? 0,
             selectedRam?.CapacityGb ?? 0);
@@ -299,8 +301,8 @@ public sealed class BuilderController : Controller
             CoolerId = compareCoolerId
         };
 
-        HydrateBuildSelections(buildA, components);
-        HydrateBuildSelections(buildB, components);
+        _buildService.HydrateBuild(buildA, components);
+        _buildService.HydrateBuild(buildB, components);
 
         var result = _compatibilityService.CompareBuilds(buildA, buildB);
         return View(result);
@@ -330,10 +332,10 @@ public sealed class BuilderController : Controller
             CoolerId = coolerId
         };
 
-        HydrateBuildSelections(build, components);
+        _buildService.HydrateBuild(build, components);
         var compatibility = _compatibilityService.Check(build);
-        var totalPrice = CalculateTotalPrice(build);
-        var estimatedWattage = CalculateEstimatedWattage(build);
+        var totalPrice = _buildService.CalculateTotalPrice(build);
+        var estimatedWattage = _buildService.CalculateEstimatedWattage(build);
         var wattage = estimatedWattage == 0 ? compatibility.EstimatedSystemWattage : estimatedWattage;
 
         var export = new
@@ -382,75 +384,9 @@ public sealed class BuilderController : Controller
         var normalizedFormat = (format ?? "json").Trim().ToLowerInvariant();
         return normalizedFormat switch
         {
-            "txt" or "text" => File(Encoding.UTF8.GetBytes(BuildTxtExport(build, compatibility, totalPrice, wattage)), "text/plain; charset=utf-8", "pc-build.txt"),
-            _ => File(JsonSerializer.SerializeToUtf8Bytes(export, new JsonSerializerOptions { WriteIndented = true }), "application/json", "pc-build.json")
+            "txt" or "text" => File(Encoding.UTF8.GetBytes(_buildService.ExportBuildAsText(build, compatibility, totalPrice, wattage)), "text/plain; charset=utf-8", "pc-build.txt"),
+            _ => File(JsonSerializer.SerializeToUtf8Bytes(_buildService.ExportBuild(build, compatibility, totalPrice, wattage), new JsonSerializerOptions { WriteIndented = true }), "application/json", "pc-build.json")
         };
-    }
-
-    private static string BuildTxtExport(SelectedBuild build, CompatibilityResult compatibility, decimal totalPrice, int estimatedWattage)
-    {
-        var sb = new StringBuilder();
-        sb.AppendLine("PC Build Export");
-        sb.AppendLine($"Generated (UTC): {DateTime.UtcNow:O}");
-        sb.AppendLine();
-
-        sb.AppendLine("Selected parts:");
-        AppendPart(sb, "CPU", build.Cpu?.Name, build.Cpu?.Manufacturer, build.Cpu?.Price);
-        AppendPart(sb, "Motherboard", build.Motherboard?.Name, build.Motherboard?.Manufacturer, build.Motherboard?.Price);
-        AppendPart(sb, "RAM", build.Ram?.Name, build.Ram?.Manufacturer, build.Ram?.Price);
-        AppendPart(sb, "GPU", build.Gpu?.Name, build.Gpu?.Manufacturer, build.Gpu?.Price);
-        AppendPart(sb, "PSU", build.Psu?.Name, build.Psu?.Manufacturer, build.Psu?.Price);
-        AppendPart(sb, "Case", build.Case?.Name, build.Case?.Manufacturer, build.Case?.Price);
-        AppendPart(sb, "Cooler", build.Cooler?.Name, build.Cooler?.Manufacturer, build.Cooler?.Price);
-        sb.AppendLine();
-
-        sb.AppendLine($"Total price: {totalPrice:C2}");
-        sb.AppendLine($"Estimated wattage: {estimatedWattage} W");
-        sb.AppendLine();
-
-        sb.AppendLine($"Compatibility: {compatibility.CompatibilityPercentage}% ({(compatibility.IsValid ? "Valid" : "Invalid")})");
-        sb.AppendLine($"Category: {compatibility.BuildCategory}");
-        sb.AppendLine();
-
-        sb.AppendLine("FPS estimates (Gaming):");
-        sb.AppendLine($"- 1080p: {compatibility.EstimatedFps1080p}");
-        sb.AppendLine($"- 1440p: {compatibility.EstimatedFps1440p}");
-        sb.AppendLine($"- 4K: {compatibility.EstimatedFps4k}");
-        sb.AppendLine($"- Ray tracing: {compatibility.EstimatedRayTracingFps}");
-        sb.AppendLine($"- Competitive: {compatibility.EstimatedCompetitiveFps}");
-        sb.AppendLine($"- AAA: {compatibility.EstimatedAaaFps}");
-        sb.AppendLine();
-
-        sb.AppendLine("Bottleneck analysis:");
-        sb.AppendLine($"- CPU bottleneck: {compatibility.CpuBottleneckPercentage}%");
-        sb.AppendLine($"- GPU bottleneck: {compatibility.GpuBottleneckPercentage}%");
-        sb.AppendLine();
-
-        sb.AppendLine("Recommendations:");
-        if (compatibility.Recommendations.Count == 0)
-        {
-            sb.AppendLine("- (none)");
-        }
-        else
-        {
-            foreach (var rec in compatibility.Recommendations)
-            {
-                sb.AppendLine($"- {rec}");
-            }
-        }
-
-        return sb.ToString();
-    }
-
-    private static void AppendPart(StringBuilder sb, string label, string? name, string? manufacturer, decimal? price)
-    {
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            sb.AppendLine($"- {label}: (not selected)");
-            return;
-        }
-
-        sb.AppendLine($"- {label}: {name} ({manufacturer ?? "Unknown"}) - {(price ?? 0m):C2}");
     }
 
     private static BuilderIndexViewModel BuildViewModel(
@@ -470,60 +406,6 @@ public sealed class BuilderController : Controller
             EstimatedWattage = estimatedWattage,
             SavedBuilds = savedBuilds
         };
-    }
-
-    private static void HydrateBuildSelections(SelectedBuild build, IReadOnlyList<Component> components)
-    {
-        build.Cpu = FindById<Cpu>(components, build.CpuId);
-        build.Motherboard = FindById<Motherboard>(components, build.MotherboardId);
-        build.Ram = FindById<Ram>(components, build.RamId);
-        build.Gpu = FindById<Gpu>(components, build.GpuId);
-        build.Psu = FindById<Psu>(components, build.PsuId);
-        build.Case = FindById<Case>(components, build.CaseId);
-        build.Cooler = FindById<Cooler>(components, build.CoolerId);
-    }
-
-    private static TComponent? FindById<TComponent>(IReadOnlyList<Component> components, int? id)
-        where TComponent : Component
-    {
-        if (id is null)
-        {
-            return null;
-        }
-
-        return components.OfType<TComponent>().FirstOrDefault(component => component.Id == id.Value);
-    }
-
-    private static decimal CalculateTotalPrice(SelectedBuild build)
-    {
-        return (build.Cpu?.Price ?? 0m)
-             + (build.Motherboard?.Price ?? 0m)
-             + (build.Ram?.Price ?? 0m)
-             + (build.Gpu?.Price ?? 0m)
-             + (build.Psu?.Price ?? 0m)
-             + (build.Case?.Price ?? 0m)
-             + (build.Cooler?.Price ?? 0m);
-    }
-
-    private static int CalculateEstimatedWattage(SelectedBuild build)
-    {
-        var cpuTdp = build.Cpu?.TdpWatts ?? 0;
-        var gpuTdp = build.Gpu?.TdpWatts ?? 0;
-        var ramCapacityGb = build.Ram?.CapacityGb ?? 0;
-
-        return CalculateEstimatedWattage(cpuTdp, gpuTdp, ramCapacityGb);
-    }
-
-    private static int CalculateEstimatedWattage(int cpuTdp, int gpuTdp, int ramCapacityGb)
-    {
-
-        if (cpuTdp == 0 && gpuTdp == 0 && ramCapacityGb == 0)
-        {
-            return 0;
-        }
-
-        var ramReserve = (int)Math.Ceiling((ramCapacityGb / 16m) * 5m);
-        return cpuTdp + gpuTdp + BaseSystemReserveWatts + ramReserve;
     }
 
     private string GetUserId()

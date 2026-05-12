@@ -26,4 +26,14 @@ public sealed class JsonSavedBuildService : ISavedBuildService
     {
         await _savedBuildRepository.SaveAsync(build, cancellationToken);
     }
+
+    public Task<bool> DeleteAsync(string id, string userId, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            return Task.FromResult(false);
+        }
+
+        return _savedBuildRepository.DeleteAsync(id, userId, cancellationToken);
+    }
 }

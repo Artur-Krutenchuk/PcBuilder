@@ -86,6 +86,37 @@ public sealed class JsonSavedBuildRepository : ISavedBuildRepository
         }
     }
 
+    public async Task<bool> DeleteAsync(string id, string userId, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(userId) || !Guid.TryParse(id, out var buildId))
+        {
+            return false;
+        }
+
+        await FileLock.WaitAsync(cancellationToken);
+        try
+        {
+            var filePath = GetFilePath();
+            var builds = await ReadAllBuildsAsync(cancellationToken);
+            var buildsList = builds.ToList();
+            var index = buildsList.FindIndex(b =>
+                b.Id == buildId && string.Equals(b.UserId, userId, StringComparison.Ordinal));
+            if (index < 0)
+            {
+                return false;
+            }
+
+            buildsList.RemoveAt(index);
+            await WriteAllBuildsAtomicAsync(filePath, buildsList, cancellationToken);
+            _logger.LogInformation("Deleted saved build {BuildId} for user {UserId}", buildId, userId);
+            return true;
+        }
+        finally
+        {
+            FileLock.Release();
+        }
+    }
+
     private async Task WriteAllBuildsAtomicAsync(string filePath, List<SavedBuild> builds, CancellationToken cancellationToken)
     {
         var appTempPath = Path.Combine(_environment.ContentRootPath, "Data", ".tmp");

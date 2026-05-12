@@ -1,0 +1,119 @@
+@model MyBuildsIndexViewModel
+@{
+    ViewData["Title"] ??= "My Builds";
+    var notice = TempData["MyBuildsMessage"] as string;
+}
+
+<div class="my-builds-page py-4 py-lg-5">
+    <div class="d-flex flex-column flex-md-row align-items-md-end justify-content-md-between gap-3 mb-4">
+        <div>
+            <h1 class="h2 fw-bold mb-2">My Builds</h1>
+            <p class="text-secondary mb-0">Saved configurations for your account only.</p>
+        </div>
+        <a class="btn btn-primary" asp-controller="Builder" asp-action="Index">
+            <i class="bi bi-tools me-1"></i>Go to builder
+        </a>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(notice))
+    {
+        <div class="alert alert-warning border-0 shadow-sm rounded-3 mb-4" role="alert">@notice</div>
+    }
+
+    @if (!Model.Builds.Any())
+    {
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body p-5 text-center text-secondary">
+                <i class="bi bi-inbox display-4 d-block mb-3 opacity-50"></i>
+                <p class="mb-3 fs-5">No saved builds yet. Start building your first PC.</p>
+                <a class="btn btn-primary btn-lg" asp-controller="Builder" asp-action="Index">Open builder</a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var card in Model.Builds)
+            {
+                var b = card.Build;
+                <div class="col-12 col-xl-6">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
+                        <div class="card-body p-4 d-flex flex-column">
+                            <div class="d-flex flex-wrap gap-2 align-items-start justify-content-between mb-2">
+                                <div>
+                                    <h2 class="h5 fw-bold mb-0">@b.DisplayName</h2>
+                                </div>
+                                <span class="badge text-bg-primary text-capitalize">@b.BuildCategory</span>
+                            </div>
+                            <dl class="row small mb-3">
+                                <dt class="col-sm-4 text-secondary">Total price</dt>
+                                <dd class="col-sm-8 fw-semibold mb-0">@b.TotalPrice.ToString("C2")</dd>
+                                <dt class="col-sm-4 text-secondary">Est. wattage</dt>
+                                <dd class="col-sm-8 fw-semibold mb-0">@b.EstimatedWattage W</dd>
+                                <dt class="col-sm-4 text-secondary">Compatibility</dt>
+                                <dd class="col-sm-8 fw-semibold mb-0">@b.CompatibilityPercentage%</dd>
+                                <dt class="col-sm-4 text-secondary">Created</dt>
+                                <dd class="col-sm-8 mb-0">@b.CreatedAtUtc.ToLocalTime().ToString("g")</dd>
+                            </dl>
+                            <div class="mb-3">
+                                <div class="small fw-semibold text-secondary text-uppercase mb-2">Selected parts</div>
+                                <ul class="list-unstyled small text-secondary mb-0">
+                                    @foreach (var line in card.PartLines)
+                                    {
+                                        <li class="mb-1">@line</li>
+                                    }
+                                </ul>
+                            </div>
+                            <div class="mt-auto d-flex flex-wrap gap-2">
+                                <a class="btn btn-primary"
+                                   asp-controller="Builder"
+                                   asp-action="Index"
+                                   asp-route-cpuId="@b.CpuId"
+                                   asp-route-motherboardId="@b.MotherboardId"
+                                   asp-route-ramId="@b.RamId"
+                                   asp-route-gpuId="@b.GpuId"
+                                   asp-route-psuId="@b.PsuId"
+                                   asp-route-caseId="@b.CaseId"
+                                   asp-route-coolerId="@b.CoolerId">
+                                    <i class="bi bi-box-arrow-in-right me-1"></i>Load in Builder
+                                </a>
+                                <a class="btn btn-outline-secondary"
+                                   asp-controller="Builder"
+                                   asp-action="ExportBuild"
+                                   asp-route-cpuId="@b.CpuId"
+                                   asp-route-motherboardId="@b.MotherboardId"
+                                   asp-route-ramId="@b.RamId"
+                                   asp-route-gpuId="@b.GpuId"
+                                   asp-route-psuId="@b.PsuId"
+                                   asp-route-caseId="@b.CaseId"
+                                   asp-route-coolerId="@b.CoolerId"
+                                   asp-route-format="json">
+                                    <i class="bi bi-download me-1"></i>Export JSON
+                                </a>
+                                <form asp-controller="MyBuilds" asp-action="Delete" method="post" class="d-inline js-delete-build-form">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@b.Id" />
+                                    <button type="submit" class="btn btn-outline-danger">
+                                        <i class="bi bi-trash me-1"></i>Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll(".js-delete-build-form").forEach(function (form) {
+            form.addEventListener("submit", function (e) {
+                if (!confirm("Delete this saved build? This cannot be undone.")) {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+}
