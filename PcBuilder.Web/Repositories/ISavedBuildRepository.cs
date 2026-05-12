@@ -8,5 +8,7 @@ public interface ISavedBuildRepository
 
     Task<IReadOnlyList<SavedBuild>> GetPublicAsync(CancellationToken cancellationToken = default);
 
+    Task<IReadOnlyList<SavedBuild>> GetAllForAdminAsync(CancellationToken cancellationToken = default);
+
     Task SaveAsync(SavedBuild build, CancellationToken cancellationToken = default);
 }
