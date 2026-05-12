@@ -217,11 +217,28 @@ else
                                            placeholder="Build name (your saves and gallery)" />
                                 </div>
                                 <div class="col-12 col-md-6">
-                                    <div class="form-check mt-1 mt-md-0">
-                                        <input class="form-check-input" type="checkbox" value="true" id="save-build-public" name="isPublic" />
-                                        <label class="form-check-label small" for="save-build-public">
-                                            Share publicly in gallery
-                                        </label>
+                                    <input type="text"
+                                           class="form-control form-control-sm"
+                                           id="save-build-description"
+                                           name="description"
+                                           maxlength="500"
+                                           autocomplete="off"
+                                           placeholder="Description (optional)" />
+                                </div>
+                                <div class="col-12">
+                                    <div class="d-flex flex-wrap gap-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" value="false" id="save-build-private" name="isPublic" checked />
+                                            <label class="form-check-label small" for="save-build-private">
+                                                Private
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" value="true" id="save-build-public" name="isPublic" />
+                                            <label class="form-check-label small" for="save-build-public">
+                                                Public
+                                            </label>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -376,7 +393,10 @@ else
                 @if (!Model.SavedBuilds.Any())
                 {
                     <div class="col-12">
-                        <div class="alert alert-light border mb-0">No saved builds yet.</div>
+                        <div class="empty-state rounded-4 p-4 text-center text-secondary">
+                            <div class="empty-state-icon mb-2"><i class="bi bi-inbox"></i></div>
+                            No saved builds yet.
+                        </div>
                     </div>
                 }
                 else

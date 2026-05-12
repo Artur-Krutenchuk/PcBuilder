@@ -10,5 +10,7 @@ public sealed class GalleryIndexViewModel
 
     public string Category { get; init; } = string.Empty;
 
+    public bool CompatibleOnly { get; init; }
+
     public string Sort { get; init; } = "newest";
 }

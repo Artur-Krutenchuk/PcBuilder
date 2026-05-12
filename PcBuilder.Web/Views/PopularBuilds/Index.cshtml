@@ -14,7 +14,10 @@
 
     @if (!Model.Any())
     {
-        <div class="alert alert-warning border-0 rounded-3 shadow-sm">No popular builds could be loaded. Check that component data is available.</div>
+        <div class="empty-state rounded-4 p-5 text-center text-secondary">
+            <div class="empty-state-icon mb-3"><i class="bi bi-stars"></i></div>
+            No popular builds could be loaded. Check that component data is available.
+        </div>
     }
     else
     {
@@ -22,7 +25,7 @@
             @foreach (var card in Model)
             {
                 <div class="col-12 col-md-6 col-xl-4">
-                    <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden popular-build-card">
                         <div class="card-body p-4 d-flex flex-column">
                             <div class="d-flex flex-wrap gap-2 mb-2">
                                 <span class="badge text-bg-@card.Badge">@card.Category</span>

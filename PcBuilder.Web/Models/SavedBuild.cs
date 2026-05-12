@@ -12,13 +12,33 @@ public sealed class SavedBuild
 
     public bool IsPublic { get; init; }
 
+    public string? BuildName { get; init; }
+
+    public string? Description { get; init; }
+
     public string CreatorUserName { get; init; } = string.Empty;
 
     public int EstimatedFps1080p { get; init; }
 
+    public int EstimatedFps1440p { get; init; }
+
+    public int EstimatedFps4k { get; init; }
+
+    public int CpuBottleneckPercentage { get; init; }
+
+    public int GpuBottleneckPercentage { get; init; }
+
+    public int EfficiencyScore { get; init; }
+
+    public int ThermalScore { get; init; }
+
+    public int PsuHealthScore { get; init; }
+
     [JsonIgnore]
     public string DisplayName =>
-        string.IsNullOrWhiteSpace(Name)
+        !string.IsNullOrWhiteSpace(BuildName)
+            ? BuildName.Trim()
+            : string.IsNullOrWhiteSpace(Name)
             ? $"Untitled · {Id.ToString("N")[..8]}"
             : Name.Trim();
 

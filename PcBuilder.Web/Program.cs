@@ -34,6 +34,7 @@ builder.Services.AddScoped<PcBuilder.Web.Services.ICompatibilityService, PcBuild
 builder.Services.AddScoped<PcBuilder.Web.Services.ISavedBuildService, PcBuilder.Web.Services.JsonSavedBuildService>();
 builder.Services.AddScoped<PcBuilder.Web.Services.IAdminDashboardService, PcBuilder.Web.Services.AdminDashboardService>();
 builder.Services.AddScoped<PcBuilder.Web.Services.IBuildService, PcBuilder.Web.Services.BuildService>();
+builder.Services.AddScoped<PcBuilder.Web.Services.IBuildComparisonService, PcBuilder.Web.Services.BuildComparisonService>();
 builder.Services.AddScoped<PcBuilder.Web.Services.IGalleryService, PcBuilder.Web.Services.GalleryService>();
 builder.Services.AddScoped<PcBuilder.Web.Services.IProfileService, PcBuilder.Web.Services.ProfileService>();
 builder.Services.AddScoped<PcBuilder.Web.Services.IHomeService, PcBuilder.Web.Services.HomeService>();
@@ -50,6 +51,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStatusCodePagesWithReExecute("/404");
 app.UseRouting();
 
 app.UseAuthentication();

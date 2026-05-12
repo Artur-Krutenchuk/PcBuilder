@@ -9,6 +9,7 @@ public interface IGalleryService
     Task<GalleryFilteredResult> FilterAndSortBuildsAsync(
         string? searchQuery,
         string? category,
+        bool compatibleOnly,
         string? sort,
         CancellationToken cancellationToken = default);
 }
@@ -18,4 +19,5 @@ public record GalleryFilteredResult(
     IReadOnlyList<string> Categories,
     string SearchQuery,
     string Category,
+    bool CompatibleOnly,
     string Sort);

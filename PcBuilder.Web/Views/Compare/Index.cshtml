@@ -1,0 +1,114 @@
+@model BuildComparisonViewModel
+@{
+    ViewData["Title"] ??= "Compare Builds";
+}
+
+<div class="compare-page py-4 py-lg-5">
+    <div class="d-flex flex-column flex-md-row align-items-md-end justify-content-md-between gap-3 mb-4">
+        <div>
+            <h1 class="h2 fw-bold mb-2">Compare Builds</h1>
+            <p class="text-secondary mb-0">Select two of your saved builds to compare key performance, power, and health metrics.</p>
+        </div>
+        <a class="btn btn-outline-secondary" asp-controller="MyBuilds" asp-action="Index">
+            <i class="bi bi-collection me-1"></i>My Builds
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body p-4">
+            <form method="get" asp-controller="Compare" asp-action="Index" class="row g-3 align-items-end">
+                <div class="col-12 col-lg-5">
+                    <label class="form-label small fw-semibold" for="buildAId">Build A</label>
+                    <select class="form-select" id="buildAId" name="buildAId">
+                        <option value="">Select first build</option>
+                        @foreach (var build in Model.SavedBuilds)
+                        {
+                            if (string.Equals(Model.BuildAId, build.Id.ToString(), StringComparison.OrdinalIgnoreCase))
+                            {
+                                <option value="@build.Id" selected>@build.DisplayName</option>
+                            }
+                            else
+                            {
+                                <option value="@build.Id">@build.DisplayName</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-12 col-lg-5">
+                    <label class="form-label small fw-semibold" for="buildBId">Build B</label>
+                    <select class="form-select" id="buildBId" name="buildBId">
+                        <option value="">Select second build</option>
+                        @foreach (var build in Model.SavedBuilds)
+                        {
+                            if (string.Equals(Model.BuildBId, build.Id.ToString(), StringComparison.OrdinalIgnoreCase))
+                            {
+                                <option value="@build.Id" selected>@build.DisplayName</option>
+                            }
+                            else
+                            {
+                                <option value="@build.Id">@build.DisplayName</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-12 col-lg-2 d-grid">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-arrow-left-right me-1"></i>Compare
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Model.Message))
+    {
+        <div class="empty-state rounded-4 p-5 text-center text-secondary" role="alert">
+            <div class="empty-state-icon mb-3"><i class="bi bi-arrow-left-right"></i></div>
+            @Model.Message
+        </div>
+    }
+
+    @if (Model.BuildA is not null && Model.BuildB is not null && Model.Items.Any())
+    {
+        <div class="row g-3 mb-4">
+            <div class="col-12 col-md-6">
+                <div class="p-3 rounded-4 border bg-body-tertiary h-100">
+                    <div class="small text-secondary mb-1">Build A</div>
+                    <div class="fw-bold">@Model.BuildA.DisplayName</div>
+                    <div class="small text-secondary">@Model.BuildA.BuildCategory · @Model.BuildA.CreatedAtUtc.ToLocalTime().ToString("g")</div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="p-3 rounded-4 border bg-body-tertiary h-100">
+                    <div class="small text-secondary mb-1">Build B</div>
+                    <div class="fw-bold">@Model.BuildB.DisplayName</div>
+                    <div class="small text-secondary">@Model.BuildB.BuildCategory · @Model.BuildB.CreatedAtUtc.ToLocalTime().ToString("g")</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">Metric</th>
+                            <th scope="col" class="text-center">@Model.BuildA.DisplayName</th>
+                            <th scope="col" class="text-center">@Model.BuildB.DisplayName</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Items)
+                        {
+                            <tr>
+                                <th scope="row">@item.Label</th>
+                                <td class="text-center fw-semibold @item.BuildAClass">@item.BuildAValue</td>
+                                <td class="text-center fw-semibold @item.BuildBClass">@item.BuildBValue</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>
