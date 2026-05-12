@@ -21,6 +21,7 @@ public sealed class GalleryService : IGalleryService
     public async Task<GalleryFilteredResult> FilterAndSortBuildsAsync(
         string? searchQuery,
         string? category,
+        bool compatibleOnly,
         string? sort,
         CancellationToken cancellationToken = default)
     {
@@ -52,17 +53,18 @@ public sealed class GalleryService : IGalleryService
         {
             var term = searchQuery.Trim();
             filtered = filtered.Where(b =>
-                b.DisplayName.Contains(term, StringComparison.OrdinalIgnoreCase)
-                || (!string.IsNullOrEmpty(b.CreatorUserName)
-                    && b.CreatorUserName.Contains(term, StringComparison.OrdinalIgnoreCase))
-                || (!string.IsNullOrWhiteSpace(b.BuildCategory)
-                    && b.BuildCategory.Contains(term, StringComparison.OrdinalIgnoreCase)));
+                b.DisplayName.Contains(term, StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (compatibleOnly)
+        {
+            filtered = filtered.Where(b => b.CompatibilityPercentage >= 80);
         }
 
         var list = filtered.ToList();
         list = ApplySort(list, normalizedSort);
 
-        return new GalleryFilteredResult(list, categories, searchQuery ?? string.Empty, category ?? string.Empty, normalizedSort);
+        return new GalleryFilteredResult(list, categories, searchQuery ?? string.Empty, category ?? string.Empty, compatibleOnly, normalizedSort);
     }
 
     private static List<SavedBuild> ApplySort(IReadOnlyList<SavedBuild> builds, string sort)

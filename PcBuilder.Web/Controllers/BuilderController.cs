@@ -147,6 +147,7 @@ public sealed class BuilderController : Controller
     public async Task<IActionResult> SaveBuild(
         [FromForm] SelectedBuild build,
         [FromForm] string? buildName,
+        [FromForm] string? description,
         [FromForm] bool isPublic,
         CancellationToken cancellationToken)
     {
@@ -165,13 +166,30 @@ public sealed class BuilderController : Controller
             trimmedName = trimmedName[..120];
         }
 
+        var trimmedDescription = string.IsNullOrWhiteSpace(description)
+            ? null
+            : description.Trim();
+        if (trimmedDescription?.Length > 500)
+        {
+            trimmedDescription = trimmedDescription[..500];
+        }
+
         var savedBuild = new SavedBuild
         {
             UserId = GetUserId(),
             Name = trimmedName,
+            BuildName = trimmedName,
+            Description = trimmedDescription,
             IsPublic = isPublic,
             CreatorUserName = User.Identity?.Name ?? string.Empty,
             EstimatedFps1080p = compatibilityResult.EstimatedFps1080p,
+            EstimatedFps1440p = compatibilityResult.EstimatedFps1440p,
+            EstimatedFps4k = compatibilityResult.EstimatedFps4k,
+            CpuBottleneckPercentage = compatibilityResult.CpuBottleneckPercentage,
+            GpuBottleneckPercentage = compatibilityResult.GpuBottleneckPercentage,
+            EfficiencyScore = compatibilityResult.EfficiencyScore,
+            ThermalScore = compatibilityResult.ThermalHealthScore,
+            PsuHealthScore = compatibilityResult.PsuHealthScore,
             CpuId = build.CpuId,
             MotherboardId = build.MotherboardId,
             RamId = build.RamId,

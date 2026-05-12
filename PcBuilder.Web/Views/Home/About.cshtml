@@ -1,0 +1,95 @@
+@{
+    ViewData["Title"] = "About";
+}
+
+<div class="about-page py-4 py-lg-5">
+    <section class="p-4 p-lg-5 rounded-4 bg-body-tertiary border mb-5">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-8">
+                <span class="badge rounded-pill text-bg-primary mb-3">PC Builder Project</span>
+                <h1 class="display-6 fw-bold mb-3">A guided PC configuration and compatibility platform.</h1>
+                <p class="lead text-secondary mb-0">
+                    The goal of this project is to help users select PC components, validate compatibility, estimate power and performance, save builds, compare builds, and share public configurations in a simple web application.
+                </p>
+            </div>
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-4">
+                        <div class="h5 fw-bold mb-2">Project focus</div>
+                        <p class="text-secondary mb-0">Practical component selection, clear feedback, and clean MVC architecture suitable for future data-source migration.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="technologies" class="mb-5">
+        <h2 class="h3 fw-bold mb-3">Technologies used</h2>
+        <div class="row g-3">
+            <div class="col-md-6 col-xl-3">
+                <div class="card h-100 border-0 shadow-sm rounded-4"><div class="card-body"><i class="bi bi-code-slash text-primary fs-3"></i><h3 class="h5 mt-3">ASP.NET Core MVC</h3><p class="text-secondary mb-0">Controllers, Razor views, services, dependency injection, and routing.</p></div></div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+                <div class="card h-100 border-0 shadow-sm rounded-4"><div class="card-body"><i class="bi bi-bootstrap text-primary fs-3"></i><h3 class="h5 mt-3">Bootstrap</h3><p class="text-secondary mb-0">Responsive layout, cards, forms, tables, badges, and dark mode support.</p></div></div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+                <div class="card h-100 border-0 shadow-sm rounded-4"><div class="card-body"><i class="bi bi-filetype-js text-primary fs-3"></i><h3 class="h5 mt-3">JavaScript</h3><p class="text-secondary mb-0">Interactive validation, loading states, saved build loading, and theme persistence.</p></div></div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+                <div class="card h-100 border-0 shadow-sm rounded-4"><div class="card-body"><i class="bi bi-database text-primary fs-3"></i><h3 class="h5 mt-3">JSON storage</h3><p class="text-secondary mb-0">Current repository implementation stores catalog and saved build data in JSON files.</p></div></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-5">
+        <h2 class="h3 fw-bold mb-3">Architecture overview</h2>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4"><div class="card-body"><h3 class="h5">Controllers</h3><p class="text-secondary mb-0">Handle HTTP requests, authorize user actions, and pass view models to Razor pages.</p></div></div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4"><div class="card-body"><h3 class="h5">Services</h3><p class="text-secondary mb-0">Contain business logic such as compatibility checks, gallery filtering, exporting, and comparison.</p></div></div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4"><div class="card-body"><h3 class="h5">Repositories</h3><p class="text-secondary mb-0">Abstract data access so JSON storage can be replaced later with database-backed storage.</p></div></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-5">
+        <h2 class="h3 fw-bold mb-3">OOP principles used</h2>
+        <div class="row g-3">
+            <div class="col-md-6 col-xl-3">
+                <div class="card h-100 border-0 shadow-sm rounded-4"><div class="card-body"><h3 class="h5">Encapsulation</h3><p class="text-secondary mb-0">Component, build, and view model classes group related data and behavior clearly.</p></div></div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+                <div class="card h-100 border-0 shadow-sm rounded-4"><div class="card-body"><h3 class="h5">Abstraction</h3><p class="text-secondary mb-0">Interfaces hide implementation details for services and repositories.</p></div></div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+                <div class="card h-100 border-0 shadow-sm rounded-4"><div class="card-body"><h3 class="h5">Single responsibility</h3><p class="text-secondary mb-0">Controllers, services, repositories, and models each focus on separate concerns.</p></div></div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+                <div class="card h-100 border-0 shadow-sm rounded-4"><div class="card-body"><h3 class="h5">Composition</h3><p class="text-secondary mb-0">Builds are composed from reusable component models such as CPU, GPU, RAM, PSU, case, and cooler.</p></div></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-5">
+        <h2 class="h3 fw-bold mb-3">Features</h2>
+        <div class="row g-3">
+            <div class="col-md-6 col-xl-4"><div class="card h-100 border-0 shadow-sm rounded-4"><div class="card-body">Component catalog with filtering and sorting.</div></div></div>
+            <div class="col-md-6 col-xl-4"><div class="card h-100 border-0 shadow-sm rounded-4"><div class="card-body">Interactive PC builder with compatibility validation.</div></div></div>
+            <div class="col-md-6 col-xl-4"><div class="card h-100 border-0 shadow-sm rounded-4"><div class="card-body">Estimated price, wattage, FPS, bottleneck, thermal, and PSU health metrics.</div></div></div>
+            <div class="col-md-6 col-xl-4"><div class="card h-100 border-0 shadow-sm rounded-4"><div class="card-body">Saved builds for authenticated users.</div></div></div>
+            <div class="col-md-6 col-xl-4"><div class="card h-100 border-0 shadow-sm rounded-4"><div class="card-body">Public build gallery with filtering and search.</div></div></div>
+            <div class="col-md-6 col-xl-4"><div class="card h-100 border-0 shadow-sm rounded-4"><div class="card-body">Saved build comparison and export options.</div></div></div>
+        </div>
+    </section>
+
+    <section class="p-4 rounded-4 border bg-body-tertiary">
+        <h2 class="h3 fw-bold mb-2">Future database migration</h2>
+        <p class="text-secondary mb-0">
+            The current JSON-backed repository approach is intentionally simple. Because data access is separated behind repository interfaces, the project can later migrate to SQL databases such as SQLite, SQL Server, or PostgreSQL, or to MongoDB for document-oriented storage, with minimal impact on controllers and views.
+        </p>
+    </section>
+</div>

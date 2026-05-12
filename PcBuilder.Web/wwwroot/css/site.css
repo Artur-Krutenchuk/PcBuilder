@@ -20,7 +20,76 @@ html {
 
 body {
   margin-bottom: 60px;
-  background: #f7f8fa;
+  background: var(--app-body-bg, #f7f8fa);
+  color: var(--bs-body-color);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+:root,
+[data-bs-theme="light"] {
+  --app-body-bg: #f7f8fa;
+  --app-card-shadow: 0 0.35rem 1.15rem rgba(33, 37, 41, 0.08);
+  --app-card-hover-shadow: 0 0.85rem 1.8rem rgba(33, 37, 41, 0.14);
+}
+
+[data-bs-theme="dark"] {
+  --app-body-bg: #0f141b;
+  --app-card-shadow: 0 0.35rem 1.15rem rgba(0, 0, 0, 0.35);
+  --app-card-hover-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.45);
+}
+
+.app-navbar {
+  background: var(--bs-body-bg);
+}
+
+.card,
+.dropdown-menu,
+.toast {
+  box-shadow: var(--app-card-shadow);
+}
+
+.card-header.bg-white {
+  background-color: var(--bs-card-bg) !important;
+}
+
+.bg-body-tertiary {
+  background-color: var(--bs-tertiary-bg) !important;
+}
+
+.form-control,
+.form-select,
+.input-group-text {
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
+  border-color: var(--bs-border-color);
+}
+
+.form-control::placeholder {
+  color: var(--bs-secondary-color);
+}
+
+.table {
+  --bs-table-bg: transparent;
+}
+
+.alert-light {
+  --bs-alert-bg: var(--bs-tertiary-bg);
+  --bs-alert-border-color: var(--bs-border-color);
+  --bs-alert-color: var(--bs-body-color);
+}
+
+.empty-state {
+  border: 1px dashed var(--bs-border-color);
+  background: var(--bs-tertiary-bg);
+}
+
+.empty-state-icon {
+  font-size: 2.5rem;
+  opacity: 0.55;
+}
+
+.btn-loading {
+  pointer-events: none;
 }
 
 @media (min-width: 992px) {
@@ -58,9 +127,18 @@ body {
   transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
-.component-catalog-card:hover {
+.component-catalog-card:hover,
+.popular-build-card:hover,
+.saved-build-card:hover,
+.gallery-build-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 0.7rem 1.5rem rgba(33, 37, 41, 0.14) !important;
+  box-shadow: var(--app-card-hover-shadow) !important;
+}
+
+.popular-build-card,
+.saved-build-card,
+.gallery-build-card {
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
 }
 
 .component-image {
@@ -142,7 +220,7 @@ body {
 }
 
 .recommended-option {
-  background-color: #d1e7dd;
+  background-color: rgba(25, 135, 84, 0.16);
   border: 1px solid #198754;
 }
 
@@ -159,14 +237,14 @@ body {
 }
 
 .comparison-table .comparison-better {
-  background-color: #d1e7dd;
-  color: #0f5132;
+  background-color: rgba(25, 135, 84, 0.18);
+  color: var(--bs-success-text-emphasis);
   font-weight: 600;
 }
 
 .comparison-table .comparison-worse {
-  background-color: #f8d7da;
-  color: #842029;
+  background-color: rgba(220, 53, 69, 0.16);
+  color: var(--bs-danger-text-emphasis);
 }
 
 /* ——— Home landing ——— */
@@ -229,6 +307,10 @@ body {
   background: linear-gradient(180deg, #eef2f7 0%, #f7f8fa 100%);
 }
 
+[data-bs-theme="dark"] .home-stats-band {
+  background: linear-gradient(180deg, #151c26 0%, #0f141b 100%);
+}
+
 .home-stat-card {
   transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
@@ -243,7 +325,24 @@ body {
 
 .home-spotlight-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 1rem 2rem rgba(33, 37, 41, 0.12) !important;
+  box-shadow: var(--app-card-hover-shadow) !important;
+}
+
+@media (max-width: 575.98px) {
+  .navbar-nav {
+    gap: 0.15rem;
+  }
+
+  #theme-toggle {
+    margin-top: 0.75rem;
+    width: 100%;
+  }
+
+  .btn,
+  .form-control,
+  .form-select {
+    min-height: 2.5rem;
+  }
 }
 
 .home-carousel-card {

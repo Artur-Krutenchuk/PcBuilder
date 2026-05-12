@@ -113,7 +113,8 @@
 
     @if (!Model.Components.Any())
     {
-        <div class="alert alert-light border rounded-4 shadow-sm">
+        <div class="empty-state rounded-4 p-5 text-center text-secondary">
+            <div class="empty-state-icon mb-3"><i class="bi bi-search"></i></div>
             <strong>No components match your filters.</strong>
             <span class="d-block small text-secondary mt-1">Try clearing search or widening type and socket filters.</span>
         </div>

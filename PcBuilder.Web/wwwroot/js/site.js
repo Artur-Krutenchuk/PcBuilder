@@ -192,6 +192,27 @@
         }
     }
 
+    function setButtonLoading(button, isLoading, loadingText) {
+        if (!button) {
+            return;
+        }
+
+        if (isLoading) {
+            button.dataset.originalHtml = button.innerHTML;
+            button.disabled = true;
+            button.classList.add("btn-loading");
+            button.innerHTML = `<span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>${loadingText}`;
+            return;
+        }
+
+        button.disabled = false;
+        button.classList.remove("btn-loading");
+        if (button.dataset.originalHtml) {
+            button.innerHTML = button.dataset.originalHtml;
+            delete button.dataset.originalHtml;
+        }
+    }
+
     function createIncompatibleWarningIndicators() {
         selects.forEach(select => {
             if (select.nextElementSibling && select.nextElementSibling.classList.contains("incompatible-warning-icon")) {
@@ -353,7 +374,7 @@
     async function validateBuildCore(showSpinner) {
         if (showSpinner) {
             spinner.classList.remove("d-none");
-            checkButton.disabled = true;
+            setButtonLoading(checkButton, true, "Checking...");
         }
 
         try {
@@ -398,7 +419,7 @@
         } finally {
             if (showSpinner) {
                 spinner.classList.add("d-none");
-                checkButton.disabled = false;
+                setButtonLoading(checkButton, false);
             }
         }
     }
@@ -658,7 +679,7 @@
     }
 
     async function saveBuild() {
-        saveBuildButton.disabled = true;
+        setButtonLoading(saveBuildButton, true, "Saving...");
         try {
             const validation = await validateBuildCore(false);
             if (!validation) {
@@ -697,9 +718,14 @@
                 nameInput.value = "";
             }
 
-            const pubInput = document.getElementById("save-build-public");
-            if (pubInput) {
-                pubInput.checked = false;
+            const descriptionInput = document.getElementById("save-build-description");
+            if (descriptionInput) {
+                descriptionInput.value = "";
+            }
+
+            const privateInput = document.getElementById("save-build-private");
+            if (privateInput) {
+                privateInput.checked = true;
             }
 
             showToast(data.message ?? "Build saved successfully.");
@@ -707,11 +733,12 @@
             console.error(error);
             showToast("Unexpected error while saving build.");
         } finally {
-            saveBuildButton.disabled = false;
+            setButtonLoading(saveBuildButton, false);
         }
     }
 
     async function loadSavedBuilds() {
+        setButtonLoading(refreshSavedBuildsButton, true, "Loading...");
         try {
             const response = await fetch(config.savedBuildsUrl, { method: "GET" });
             if (!response.ok) {
@@ -725,13 +752,15 @@
             wireCompareBuildButtons();
         } catch (error) {
             console.error(error);
+        } finally {
+            setButtonLoading(refreshSavedBuildsButton, false);
         }
     }
 
     function renderSavedBuildCards(builds) {
         savedBuildsList.innerHTML = "";
         if (!Array.isArray(builds) || builds.length === 0) {
-            savedBuildsList.innerHTML = '<div class="col-12"><div class="alert alert-light border mb-0">No saved builds yet.</div></div>';
+            savedBuildsList.innerHTML = '<div class="col-12"><div class="empty-state rounded-4 p-4 text-center text-secondary"><div class="empty-state-icon mb-2"><i class="bi bi-inbox"></i></div>No saved builds yet.</div></div>';
             return;
         }
 
@@ -803,16 +832,21 @@
         const loadButtons = Array.from(document.querySelectorAll(".load-build-btn"));
         loadButtons.forEach(button => {
             button.addEventListener("click", async () => {
-                setSelectValue("CpuId", button.getAttribute("data-cpu-id"));
-                setSelectValue("MotherboardId", button.getAttribute("data-motherboard-id"));
-                setSelectValue("RamId", button.getAttribute("data-ram-id"));
-                setSelectValue("GpuId", button.getAttribute("data-gpu-id"));
-                setSelectValue("PsuId", button.getAttribute("data-psu-id"));
-                setSelectValue("CaseId", button.getAttribute("data-case-id"));
-                setSelectValue("CoolerId", button.getAttribute("data-cooler-id"));
-                updateSummary();
-                await refreshCompatibleOptions();
-                await validateBuild();
+                setButtonLoading(button, true, "Loading...");
+                try {
+                    setSelectValue("CpuId", button.getAttribute("data-cpu-id"));
+                    setSelectValue("MotherboardId", button.getAttribute("data-motherboard-id"));
+                    setSelectValue("RamId", button.getAttribute("data-ram-id"));
+                    setSelectValue("GpuId", button.getAttribute("data-gpu-id"));
+                    setSelectValue("PsuId", button.getAttribute("data-psu-id"));
+                    setSelectValue("CaseId", button.getAttribute("data-case-id"));
+                    setSelectValue("CoolerId", button.getAttribute("data-cooler-id"));
+                    updateSummary();
+                    await refreshCompatibleOptions();
+                    await validateBuild();
+                } finally {
+                    setButtonLoading(button, false);
+                }
             });
         });
     }

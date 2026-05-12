@@ -42,7 +42,7 @@
                                id="gallery-search"
                                name="q"
                                value="@Model.SearchQuery"
-                               placeholder="Build name, creator, category…"
+                               placeholder="Build name…"
                                autocomplete="off" />
                     </div>
                 </div>
@@ -70,6 +70,14 @@
                         }
                     </select>
                 </div>
+                <div class="col-12 col-md-4 col-lg-2">
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" value="true" id="gallery-compatible-only" name="compatibleOnly" checked="@Model.CompatibleOnly" />
+                        <label class="form-check-label small fw-semibold" for="gallery-compatible-only">
+                            Compatibility >= 80
+                        </label>
+                    </div>
+                </div>
                 <div class="col-12 col-md-4 col-lg-3">
                     <label class="form-label small fw-semibold mb-1" for="gallery-sort">Sort</label>
                     <select class="form-select" id="gallery-sort" name="sort">
@@ -96,7 +104,8 @@
 
     @if (!Model.Builds.Any())
     {
-        <div class="alert alert-light border rounded-3 shadow-sm">
+        <div class="empty-state rounded-4 p-5 text-center text-secondary">
+            <div class="empty-state-icon mb-3"><i class="bi bi-collection"></i></div>
             <strong>No public builds match your filters.</strong>
             <span class="d-block small text-secondary mt-1">Save a build from the builder with “Share publicly in gallery” checked, or widen your search.</span>
         </div>
@@ -119,13 +128,17 @@
                             <div class="small text-secondary mb-3">
                                 <i class="bi bi-person-circle me-1"></i>@creator
                             </div>
+                            @if (!string.IsNullOrWhiteSpace(build.Description))
+                            {
+                                <p class="small text-secondary mb-3">@build.Description</p>
+                            }
                             <dl class="row small mb-0 flex-grow-1">
                                 <dt class="col-6 text-secondary">Total price</dt>
                                 <dd class="col-6 text-end fw-semibold">@build.TotalPrice.ToString("C2")</dd>
                                 <dt class="col-6 text-secondary">Compatibility</dt>
                                 <dd class="col-6 text-end fw-semibold">@build.CompatibilityPercentage%</dd>
-                                <dt class="col-6 text-secondary">Est. FPS</dt>
-                                <dd class="col-6 text-end fw-semibold">@fpsLabel</dd>
+                                <dt class="col-6 text-secondary">Estimated wattage</dt>
+                                <dd class="col-6 text-end fw-semibold">@build.EstimatedWattage W</dd>
                                 <dt class="col-6 text-secondary">Saved</dt>
                                 <dd class="col-6 text-end">@build.CreatedAtUtc.ToLocalTime().ToString("g")</dd>
                             </dl>

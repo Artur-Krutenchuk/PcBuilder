@@ -22,12 +22,10 @@
 
     @if (!Model.Builds.Any())
     {
-        <div class="card border-0 shadow-sm rounded-4">
-            <div class="card-body p-5 text-center text-secondary">
-                <i class="bi bi-inbox display-4 d-block mb-3 opacity-50"></i>
-                <p class="mb-3 fs-5">No saved builds yet. Start building your first PC.</p>
+        <div class="empty-state rounded-4 p-5 text-center text-secondary">
+            <div class="empty-state-icon mb-3"><i class="bi bi-inbox"></i></div>
+            <p class="mb-3 fs-5">No saved builds yet. Start building your first PC.</p>
                 <a class="btn btn-primary btn-lg" asp-controller="Builder" asp-action="Index">Open builder</a>
-            </div>
         </div>
     }
     else
@@ -37,7 +35,7 @@
             {
                 var b = card.Build;
                 <div class="col-12 col-xl-6">
-                    <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden saved-build-card">
                         <div class="card-body p-4 d-flex flex-column">
                             <div class="d-flex flex-wrap gap-2 align-items-start justify-content-between mb-2">
                                 <div>
@@ -89,6 +87,12 @@
                                    asp-route-coolerId="@b.CoolerId"
                                    asp-route-format="json">
                                     <i class="bi bi-download me-1"></i>Export JSON
+                                </a>
+                                <a class="btn btn-outline-primary"
+                                   asp-controller="Compare"
+                                   asp-action="Index"
+                                   asp-route-buildAId="@b.Id">
+                                    <i class="bi bi-arrow-left-right me-1"></i>Compare
                                 </a>
                                 <form asp-controller="MyBuilds" asp-action="Delete" method="post" class="d-inline js-delete-build-form">
                                     @Html.AntiForgeryToken()
