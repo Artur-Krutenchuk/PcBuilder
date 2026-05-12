@@ -99,13 +99,6 @@ public sealed class AccountController : Controller
         return RedirectToAction("Index", "Builder");
     }
 
-    [HttpGet]
-    [AllowAnonymous]
-    public IActionResult AccessDenied()
-    {
-        return View();
-    }
-
     [HttpPost]
     [Authorize]
     [ValidateAntiForgeryToken]

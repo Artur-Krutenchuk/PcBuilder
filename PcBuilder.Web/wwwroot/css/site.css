@@ -314,16 +314,6 @@ body {
   object-fit: cover;
 }
 
-.admin-body .admin-sidebar {
-  min-height: 100%;
-}
-
-@media (min-width: 992px) {
-  .admin-body .admin-sidebar {
-    min-height: calc(100vh - 3.25rem);
-  }
-}
-
 .gallery-build-card {
   transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
