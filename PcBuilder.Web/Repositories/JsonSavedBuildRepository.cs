@@ -5,6 +5,8 @@ namespace PcBuilder.Web.Repositories;
 
 public sealed class JsonSavedBuildRepository : ISavedBuildRepository
 {
+    private static readonly SemaphoreSlim FileLock = new(1, 1);
+
     private static readonly JsonSerializerOptions SerializerOptions = new()
     {
         WriteIndented = true
@@ -19,7 +21,72 @@ public sealed class JsonSavedBuildRepository : ISavedBuildRepository
         _logger = logger;
     }
 
-    public async Task<IReadOnlyList<SavedBuild>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<SavedBuild>> GetAllAsync(string userId, CancellationToken cancellationToken = default)
+    {
+        await FileLock.WaitAsync(cancellationToken);
+        try
+        {
+            var builds = await ReadAllBuildsCoreAsync(cancellationToken);
+            return builds.Where(build => string.Equals(build.UserId, userId, StringComparison.Ordinal)).ToList();
+        }
+        finally
+        {
+            FileLock.Release();
+        }
+    }
+
+    public async Task<IReadOnlyList<SavedBuild>> GetPublicAsync(CancellationToken cancellationToken = default)
+    {
+        await FileLock.WaitAsync(cancellationToken);
+        try
+        {
+            var builds = await ReadAllBuildsCoreAsync(cancellationToken);
+            return builds.Where(build => build.IsPublic).OrderByDescending(build => build.CreatedAtUtc).ToList();
+        }
+        finally
+        {
+            FileLock.Release();
+        }
+    }
+
+    public async Task<IReadOnlyList<SavedBuild>> GetAllForAdminAsync(CancellationToken cancellationToken = default)
+    {
+        await FileLock.WaitAsync(cancellationToken);
+        try
+        {
+            var builds = await ReadAllBuildsCoreAsync(cancellationToken);
+            return builds.OrderByDescending(build => build.CreatedAtUtc).ToList();
+        }
+        finally
+        {
+            FileLock.Release();
+        }
+    }
+
+    public async Task SaveAsync(SavedBuild build, CancellationToken cancellationToken = default)
+    {
+        await FileLock.WaitAsync(cancellationToken);
+        try
+        {
+            var filePath = GetFilePath();
+            var directoryPath = Path.GetDirectoryName(filePath);
+            if (!string.IsNullOrWhiteSpace(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+
+            var builds = await ReadAllBuildsCoreAsync(cancellationToken);
+            builds.Insert(0, build);
+            await WriteAllBuildsAtomicAsync(filePath, builds, cancellationToken);
+            _logger.LogInformation("Saved build {BuildId} at {CreatedAtUtc}.", build.Id, build.CreatedAtUtc);
+        }
+        finally
+        {
+            FileLock.Release();
+        }
+    }
+
+    private async Task<List<SavedBuild>> ReadAllBuildsCoreAsync(CancellationToken cancellationToken)
     {
         var filePath = GetFilePath();
         if (!File.Exists(filePath))
@@ -32,21 +99,27 @@ public sealed class JsonSavedBuildRepository : ISavedBuildRepository
         return builds ?? [];
     }
 
-    public async Task SaveAsync(SavedBuild build, CancellationToken cancellationToken = default)
+    private async Task WriteAllBuildsAtomicAsync(string filePath, List<SavedBuild> builds, CancellationToken cancellationToken)
     {
-        var filePath = GetFilePath();
-        var directoryPath = Path.GetDirectoryName(filePath);
-        if (!string.IsNullOrWhiteSpace(directoryPath))
+        var tempPath = Path.Combine(Path.GetTempPath(), $"savedbuilds-{Guid.NewGuid():N}.tmp.json");
+        await using (var stream = File.Create(tempPath))
         {
-            Directory.CreateDirectory(directoryPath);
+            await JsonSerializer.SerializeAsync(stream, builds, SerializerOptions, cancellationToken);
         }
 
-        var builds = (await GetAllAsync(cancellationToken)).ToList();
-        builds.Insert(0, build);
+        try
+        {
+            File.Move(tempPath, filePath, overwrite: true);
+        }
+        catch
+        {
+            if (File.Exists(tempPath))
+            {
+                File.Delete(tempPath);
+            }
 
-        await using var stream = File.Create(filePath);
-        await JsonSerializer.SerializeAsync(stream, builds, SerializerOptions, cancellationToken);
-        _logger.LogInformation("Saved build {BuildId} at {CreatedAtUtc}.", build.Id, build.CreatedAtUtc);
+            throw;
+        }
     }
 
     private string GetFilePath()

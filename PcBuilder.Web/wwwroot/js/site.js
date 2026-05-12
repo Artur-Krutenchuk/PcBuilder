@@ -53,6 +53,30 @@
         minimumFractionDigits: 2
     });
 
+    function escapeHtml(value) {
+        if (value === null || value === undefined) {
+            return "";
+        }
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+    }
+
+    function savedBuildDisplayName(build) {
+        const raw = build?.name;
+        if (raw != null && String(raw).trim().length > 0) {
+            return escapeHtml(String(raw).trim());
+        }
+
+        const id = build?.id != null ? String(build.id).replace(/-/g, "") : "";
+        const shortId = id.length >= 8 ? id.slice(0, 8) : id || "····";
+        return `Untitled · ${escapeHtml(shortId)}`;
+    }
+
     buildForm.addEventListener("submit", event => {
         event.preventDefault();
     });
@@ -92,6 +116,10 @@
     wireLoadBuildButtons();
     wireCompareBuildButtons();
     void refreshCompatibleOptions();
+
+    if (config.isAuthenticated !== true) {
+        saveBuildButton.classList.add("d-none");
+    }
 
     async function exportBuild(format) {
         if (!config.exportBuildUrl) {
@@ -644,6 +672,11 @@
                 body: formData
             });
 
+            if (response.status === 401 || response.status === 403) {
+                showToast("Please login to save builds.");
+                return;
+            }
+
             if (!response.ok) {
                 showToast("Save request failed.");
                 return;
@@ -659,6 +692,16 @@
             renderSavedBuildCards(savedBuilds);
             wireLoadBuildButtons();
             wireCompareBuildButtons();
+            const nameInput = document.getElementById("save-build-name");
+            if (nameInput) {
+                nameInput.value = "";
+            }
+
+            const pubInput = document.getElementById("save-build-public");
+            if (pubInput) {
+                pubInput.checked = false;
+            }
+
             showToast(data.message ?? "Build saved successfully.");
         } catch (error) {
             console.error(error);
@@ -698,13 +741,28 @@
 
             const created = new Date(build.createdAtUtc);
             const createdLabel = Number.isNaN(created.getTime()) ? "-" : created.toLocaleString();
+            const titleHtml = savedBuildDisplayName(build);
+            const isPublic = build.isPublic === true;
+            const visibilityBadge = isPublic
+                ? `<span class="badge text-bg-success flex-shrink-0">Public</span>`
+                : `<span class="badge text-bg-secondary flex-shrink-0">Private</span>`;
+            const fps = Number(build.estimatedFps1080p ?? 0);
+            const fpsBadge =
+                fps > 0
+                    ? `<span class="badge text-bg-info text-dark">${fps} FPS · 1080p</span>`
+                    : "";
 
             card.innerHTML = `
                 <div class="card border h-100 saved-build-card">
                     <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="badge text-bg-primary">${build.buildCategory ?? "Uncategorized"}</span>
+                        <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                            <h3 class="h6 fw-semibold mb-0 flex-grow-1">${titleHtml}</h3>
+                            ${visibilityBadge}
+                        </div>
+                        <div class="d-flex flex-wrap gap-1 mb-2">
+                            <span class="badge text-bg-primary">${escapeHtml(build.buildCategory ?? "Uncategorized")}</span>
                             <span class="badge text-bg-dark">${Number(build.compatibilityPercentage ?? 0)}%</span>
+                            ${fpsBadge}
                         </div>
                         <div class="small text-secondary mb-1">Total price: <strong>${formatter.format(Number(build.totalPrice ?? 0))}</strong></div>
                         <div class="small text-secondary mb-1">Estimated wattage: <strong>${Number(build.estimatedWattage ?? 0)} W</strong></div>
