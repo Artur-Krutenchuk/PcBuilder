@@ -42,7 +42,13 @@ public sealed class JsonComponentRepository : IComponentRepository
             }
 
             var ordered = components.OrderBy(c => c.Type, StringComparer.OrdinalIgnoreCase).ThenBy(c => c.Id).ToList();
-            var tempPath = Path.Combine(Path.GetTempPath(), $"buildcores-{Guid.NewGuid():N}.tmp.json");
+            var appTempPath = Path.Combine(_environment.ContentRootPath, "Data", ".tmp");
+            if (!Directory.Exists(appTempPath))
+            {
+                Directory.CreateDirectory(appTempPath);
+            }
+
+            var tempPath = Path.Combine(appTempPath, $"buildcores-{Guid.NewGuid():N}.tmp.json");
             await using (var stream = File.Create(tempPath))
             {
                 await using var writer = new Utf8JsonWriter(stream, new JsonWriterOptions { Indented = true });
@@ -63,7 +69,14 @@ public sealed class JsonComponentRepository : IComponentRepository
             {
                 if (File.Exists(tempPath))
                 {
-                    File.Delete(tempPath);
+                    try
+                    {
+                        File.Delete(tempPath);
+                    }
+                    catch
+                    {
+                        _logger.LogWarning("Failed to clean up temporary file: {Path}", tempPath);
+                    }
                 }
 
                 throw;
