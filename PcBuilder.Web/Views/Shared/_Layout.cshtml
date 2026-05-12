@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -31,6 +31,15 @@
                             <a class="nav-link text-dark" asp-controller="Gallery" asp-action="Index">Gallery</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="PopularBuilds" asp-action="Index">Popular Builds</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Components" asp-action="Index">Catalog</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Statistics" asp-action="Index">Statistics</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                     </ul>
@@ -44,6 +53,9 @@
                                     <a class="nav-link text-dark fw-semibold" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Admin</a>
                                 </li>
                             }
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="MyBuilds" asp-action="Index">My Builds</a>
+                            </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="Profile" asp-action="Index">Profile</a>
                             </li>

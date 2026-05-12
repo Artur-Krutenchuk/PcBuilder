@@ -1,0 +1,60 @@
+@model IReadOnlyList<PopularBuildCardViewModel>
+@{
+    ViewData["Title"] ??= "Popular Builds";
+}
+
+<div class="popular-builds-page py-4 py-lg-5">
+    <div class="mb-4 mb-lg-5">
+        <h1 class="h2 fw-bold mb-2">Popular Builds</h1>
+        <p class="text-secondary mb-0 col-lg-8">
+            Ready-made configurations from the catalog. Metrics come from the same compatibility engine as the builder.
+            Load any preset to tweak parts or run AJAX validation.
+        </p>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-warning border-0 rounded-3 shadow-sm">No popular builds could be loaded. Check that component data is available.</div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var card in Model)
+            {
+                <div class="col-12 col-md-6 col-xl-4">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
+                        <div class="card-body p-4 d-flex flex-column">
+                            <div class="d-flex flex-wrap gap-2 mb-2">
+                                <span class="badge text-bg-@card.Badge">@card.Category</span>
+                            </div>
+                            <h2 class="h5 fw-bold mb-2">@card.Name</h2>
+                            <p class="small text-secondary mb-3">@card.Description</p>
+                            <dl class="row small mb-0 flex-grow-1">
+                                <dt class="col-6 text-secondary">Total price</dt>
+                                <dd class="col-6 text-end fw-semibold">@card.TotalPrice.ToString("C2")</dd>
+                                <dt class="col-6 text-secondary">Compatibility</dt>
+                                <dd class="col-6 text-end fw-semibold">@card.CompatibilityPercentage%</dd>
+                                <dt class="col-6 text-secondary">Est. FPS (1080p)</dt>
+                                <dd class="col-6 text-end fw-semibold">@card.EstimatedFps1080p</dd>
+                                <dt class="col-6 text-secondary">Est. wattage</dt>
+                                <dd class="col-6 text-end fw-semibold">@card.EstimatedWattage W</dd>
+                            </dl>
+                            <div class="mt-4 d-grid">
+                                <a class="btn btn-primary btn-lg"
+                                   asp-controller="Builder"
+                                   asp-action="Index"
+                                   asp-route-cpuId="@card.CpuId"
+                                   asp-route-motherboardId="@card.MotherboardId"
+                                   asp-route-ramId="@card.RamId"
+                                   asp-route-gpuId="@card.GpuId"
+                                   asp-route-psuId="@card.PsuId">
+                                    Load into Builder
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

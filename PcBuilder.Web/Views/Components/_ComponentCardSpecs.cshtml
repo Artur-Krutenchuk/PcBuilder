@@ -1,0 +1,62 @@
+@model Component
+@if (Model is Cpu cpu)
+{
+    <ul class="list-unstyled small text-secondary mb-0">
+        <li><span class="text-body-secondary">Socket</span> · @cpu.Socket</li>
+        <li><span class="text-body-secondary">Cores / threads</span> · @cpu.Cores / @cpu.Threads</li>
+        <li><span class="text-body-secondary">TDP</span> · @cpu.TdpWatts W</li>
+        <li><span class="text-body-secondary">Base clock</span> · @cpu.BaseClockGhz GHz</li>
+    </ul>
+}
+else if (Model is Motherboard mb)
+{
+    <ul class="list-unstyled small text-secondary mb-0">
+        <li><span class="text-body-secondary">Socket</span> · @mb.Socket</li>
+        <li><span class="text-body-secondary">Chipset</span> · @mb.Chipset</li>
+        <li><span class="text-body-secondary">Form factor</span> · @(mb.FormFactor ?? "—")</li>
+        <li><span class="text-body-secondary">RAM</span> · @string.Join(", ", mb.SupportedRamTypes)</li>
+    </ul>
+}
+else if (Model is Ram ram)
+{
+    <ul class="list-unstyled small text-secondary mb-0">
+        <li><span class="text-body-secondary">Type</span> · @ram.RamType</li>
+        <li><span class="text-body-secondary">Capacity</span> · @ram.CapacityGb GB</li>
+        <li><span class="text-body-secondary">Speed</span> · @ram.FrequencyMhz MHz</li>
+    </ul>
+}
+else if (Model is Gpu gpu)
+{
+    <ul class="list-unstyled small text-secondary mb-0">
+        <li><span class="text-body-secondary">VRAM</span> · @gpu.VramGb GB</li>
+        <li><span class="text-body-secondary">TDP</span> · @gpu.TdpWatts W</li>
+        <li><span class="text-body-secondary">Length</span> · @(gpu.LengthMm?.ToString() ?? "—") mm</li>
+    </ul>
+}
+else if (Model is Psu psu)
+{
+    <ul class="list-unstyled small text-secondary mb-0">
+        <li><span class="text-body-secondary">Wattage</span> · @psu.Wattage W</li>
+        <li><span class="text-body-secondary">Efficiency</span> · @psu.EfficiencyRating</li>
+    </ul>
+}
+else if (Model is Case pcCase)
+{
+    <ul class="list-unstyled small text-secondary mb-0">
+        <li><span class="text-body-secondary">Max GPU</span> · @(pcCase.MaxGpuLengthMm?.ToString() ?? "—") mm</li>
+        <li><span class="text-body-secondary">Fans included</span> · @pcCase.IncludedFans</li>
+        <li><span class="text-body-secondary">Airflow</span> · @pcCase.AirflowRating</li>
+    </ul>
+}
+else if (Model is Cooler cooler)
+{
+    <ul class="list-unstyled small text-secondary mb-0">
+        <li><span class="text-body-secondary">Sockets</span> · @string.Join(", ", cooler.SupportedSockets)</li>
+        <li><span class="text-body-secondary">TDP capacity</span> · @cooler.CoolingCapacityWatts W</li>
+        <li><span class="text-body-secondary">Noise</span> · @cooler.NoiseLevelDb dB</li>
+    </ul>
+}
+else
+{
+    <p class="small text-secondary mb-0">—</p>
+}

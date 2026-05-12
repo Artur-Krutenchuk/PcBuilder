@@ -1,0 +1,249 @@
+@model StatisticsViewModel
+@{
+    ViewData["Title"] ??= "Statistics";
+    var chartByType = (string)(ViewData["StatisticsChartByType"] ?? "{}");
+    var chartManufacturers = (string)(ViewData["StatisticsChartManufacturers"] ?? "{}");
+    var chartSockets = (string)(ViewData["StatisticsChartSockets"] ?? "{}");
+    var chartAvgPrice = (string)(ViewData["StatisticsChartAvgPriceByType"] ?? "{}");
+}
+
+<div class="statistics-page py-4 py-lg-5">
+    <header class="mb-4 mb-lg-5">
+        <p class="text-uppercase small fw-semibold text-primary mb-2">Analytics</p>
+        <h1 class="h2 fw-bold mb-2">Catalog statistics</h1>
+        <p class="text-secondary mb-0 col-lg-9">
+            Aggregates from the live component repository. Charts use Chart.js and update from the same data as the summary cards.
+        </p>
+    </header>
+
+    <div class="row g-3 g-lg-4 mb-4 mb-lg-5">
+        <div class="col-6 col-xl-3">
+            <div class="card border-0 shadow-sm h-100 rounded-4">
+                <div class="card-body p-4">
+                    <div class="text-secondary small fw-semibold text-uppercase mb-1">Total parts</div>
+                    <div class="display-6 fw-bold text-primary">@Model.TotalComponents.ToString("N0")</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-xl-3">
+            <div class="card border-0 shadow-sm h-100 rounded-4">
+                <div class="card-body p-4">
+                    <div class="text-secondary small fw-semibold text-uppercase mb-1">CPUs / GPUs</div>
+                    <div class="fs-3 fw-bold">@Model.CpuCount <span class="text-secondary fs-5 fw-normal">/</span> @Model.GpuCount</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-xl-3">
+            <div class="card border-0 shadow-sm h-100 rounded-4">
+                <div class="card-body p-4">
+                    <div class="text-secondary small fw-semibold text-uppercase mb-1">Avg CPU price</div>
+                    <div class="fs-3 fw-bold">@Model.AverageCpuPrice.ToString("C2")</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-xl-3">
+            <div class="card border-0 shadow-sm h-100 rounded-4">
+                <div class="card-body p-4">
+                    <div class="text-secondary small fw-semibold text-uppercase mb-1">Avg GPU price</div>
+                    <div class="fs-3 fw-bold">@Model.AverageGpuPrice.ToString("C2")</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 g-lg-4 mb-4">
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="card border-0 shadow-sm h-100 rounded-4 bg-body-tertiary">
+                <div class="card-body p-3 text-center">
+                    <div class="small text-secondary">Motherboards</div>
+                    <div class="fs-4 fw-bold">@Model.MotherboardCount</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="card border-0 shadow-sm h-100 rounded-4 bg-body-tertiary">
+                <div class="card-body p-3 text-center">
+                    <div class="small text-secondary">RAM</div>
+                    <div class="fs-4 fw-bold">@Model.RamCount</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="card border-0 shadow-sm h-100 rounded-4 bg-body-tertiary">
+                <div class="card-body p-3 text-center">
+                    <div class="small text-secondary">PSUs</div>
+                    <div class="fs-4 fw-bold">@Model.PsuCount</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="card border-0 shadow-sm h-100 rounded-4 bg-body-tertiary">
+                <div class="card-body p-3 text-center">
+                    <div class="small text-secondary">Cases</div>
+                    <div class="fs-4 fw-bold">@Model.CaseCount</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-12 col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-white border-0 pt-4 px-4 pb-0">
+                    <h2 class="h5 fw-bold mb-0">Components by type</h2>
+                    <p class="small text-secondary mb-0 mt-1">Count per catalog type</p>
+                </div>
+                <div class="card-body p-4">
+                    <div class="chart-wrap position-relative" style="min-height: 280px;">
+                        <canvas id="chartByType" aria-label="Components by type chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-white border-0 pt-4 px-4 pb-0">
+                    <h2 class="h5 fw-bold mb-0">Manufacturers</h2>
+                    <p class="small text-secondary mb-0 mt-1">Parts per manufacturer</p>
+                </div>
+                <div class="card-body p-4">
+                    <div class="chart-wrap position-relative" style="min-height: 280px;">
+                        <canvas id="chartManufacturers" aria-label="Manufacturers chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-white border-0 pt-4 px-4 pb-0">
+                    <h2 class="h5 fw-bold mb-0">Sockets</h2>
+                    <p class="small text-secondary mb-0 mt-1">CPU, motherboard, and cooler socket coverage</p>
+                </div>
+                <div class="card-body p-4">
+                    <div class="chart-wrap position-relative" style="min-height: 280px;">
+                        <canvas id="chartSockets" aria-label="Socket distribution chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-white border-0 pt-4 px-4 pb-0">
+                    <h2 class="h5 fw-bold mb-0">Average price by type</h2>
+                    <p class="small text-secondary mb-0 mt-1">Mean catalog price per component type</p>
+                </div>
+                <div class="card-body p-4">
+                    <div class="chart-wrap position-relative" style="min-height: 280px;">
+                        <canvas id="chartAvgPriceByType" aria-label="Average price by type chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" crossorigin="anonymous"></script>
+    <script type="application/json" id="stats-json-by-type">@Html.Raw(chartByType)</script>
+    <script type="application/json" id="stats-json-manufacturers">@Html.Raw(chartManufacturers)</script>
+    <script type="application/json" id="stats-json-sockets">@Html.Raw(chartSockets)</script>
+    <script type="application/json" id="stats-json-avg-price">@Html.Raw(chartAvgPrice)</script>
+    <script>
+        (function () {
+            function readJson(id) {
+                var el = document.getElementById(id);
+                if (!el || !el.textContent) return { labels: [], data: [] };
+                try { return JSON.parse(el.textContent); } catch { return { labels: [], data: [] }; }
+            }
+
+            var commonOpts = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } }
+            };
+
+            var byType = readJson("stats-json-by-type");
+            new Chart(document.getElementById("chartByType"), {
+                type: "doughnut",
+                data: {
+                    labels: byType.labels,
+                    datasets: [{
+                        data: byType.data,
+                        backgroundColor: ["#0d6efd", "#6610f2", "#6f42c1", "#d63384", "#dc3545", "#fd7e14", "#ffc107", "#198754", "#20c997"]
+                    }]
+                },
+                options: { ...commonOpts, plugins: { ...commonOpts.plugins, legend: { display: true, position: "bottom" } } }
+            });
+
+            var mfr = readJson("stats-json-manufacturers");
+            new Chart(document.getElementById("chartManufacturers"), {
+                type: "bar",
+                data: {
+                    labels: mfr.labels,
+                    datasets: [{
+                        label: "Parts",
+                        data: mfr.data,
+                        backgroundColor: "rgba(13, 110, 253, 0.65)",
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    ...commonOpts,
+                    scales: {
+                        x: { ticks: { maxRotation: 45, minRotation: 0 } },
+                        y: { beginAtZero: true, ticks: { precision: 0 } }
+                    }
+                }
+            });
+
+            var sock = readJson("stats-json-sockets");
+            new Chart(document.getElementById("chartSockets"), {
+                type: "polarArea",
+                data: {
+                    labels: sock.labels,
+                    datasets: [{
+                        data: sock.data,
+                        backgroundColor: ["rgba(13, 110, 253, 0.55)", "rgba(25, 135, 84, 0.55)", "rgba(253, 126, 20, 0.55)", "rgba(214, 51, 132, 0.55)", "rgba(102, 16, 242, 0.55)", "rgba(32, 201, 151, 0.55)"]
+                    }]
+                },
+                options: { ...commonOpts, plugins: { ...commonOpts.plugins, legend: { display: true, position: "right" } } }
+            });
+
+            var avg = readJson("stats-json-avg-price");
+            new Chart(document.getElementById("chartAvgPriceByType"), {
+                type: "bar",
+                data: {
+                    labels: avg.labels,
+                    datasets: [{
+                        label: "Average price",
+                        data: avg.data,
+                        backgroundColor: "rgba(25, 135, 84, 0.65)",
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    ...commonOpts,
+                    scales: {
+                        x: { ticks: { maxRotation: 40, minRotation: 0 } },
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function (v) { return "$" + Number(v).toLocaleString(undefined, { maximumFractionDigits: 0 }); }
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function (ctx) {
+                                    var n = ctx.parsed.y;
+                                    return "Avg: $" + n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        })();
+    </script>
+}

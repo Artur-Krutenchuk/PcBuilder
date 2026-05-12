@@ -26,7 +26,7 @@ public sealed class JsonSavedBuildRepository : ISavedBuildRepository
         await FileLock.WaitAsync(cancellationToken);
         try
         {
-            var builds = await ReadAllBuildsCoreAsync(cancellationToken);
+            var builds = await ReadAllBuildsAsync(cancellationToken);
             return builds.Where(build => string.Equals(build.UserId, userId, StringComparison.Ordinal)).ToList();
         }
         finally
@@ -40,7 +40,7 @@ public sealed class JsonSavedBuildRepository : ISavedBuildRepository
         await FileLock.WaitAsync(cancellationToken);
         try
         {
-            var builds = await ReadAllBuildsCoreAsync(cancellationToken);
+            var builds = await ReadAllBuildsAsync(cancellationToken);
             return builds.Where(build => build.IsPublic).OrderByDescending(build => build.CreatedAtUtc).ToList();
         }
         finally
@@ -54,8 +54,7 @@ public sealed class JsonSavedBuildRepository : ISavedBuildRepository
         await FileLock.WaitAsync(cancellationToken);
         try
         {
-            var builds = await ReadAllBuildsCoreAsync(cancellationToken);
-            return builds.OrderByDescending(build => build.CreatedAtUtc).ToList();
+            return await ReadAllBuildsAsync(cancellationToken);
         }
         finally
         {
@@ -75,10 +74,11 @@ public sealed class JsonSavedBuildRepository : ISavedBuildRepository
                 Directory.CreateDirectory(directoryPath);
             }
 
-            var builds = await ReadAllBuildsCoreAsync(cancellationToken);
-            builds.Insert(0, build);
-            await WriteAllBuildsAtomicAsync(filePath, builds, cancellationToken);
-            _logger.LogInformation("Saved build {BuildId} at {CreatedAtUtc}.", build.Id, build.CreatedAtUtc);
+            var builds = await ReadAllBuildsAsync(cancellationToken);
+            var buildsList = builds.ToList();
+            buildsList.Insert(0, build);
+            await WriteAllBuildsAtomicAsync(filePath, buildsList, cancellationToken);
+            _logger.LogInformation("Saved build {BuildId} for user {UserId}", build.Id, build.UserId);
         }
         finally
         {
@@ -86,22 +86,46 @@ public sealed class JsonSavedBuildRepository : ISavedBuildRepository
         }
     }
 
-    private async Task<List<SavedBuild>> ReadAllBuildsCoreAsync(CancellationToken cancellationToken)
+    public async Task<bool> DeleteAsync(string id, string userId, CancellationToken cancellationToken = default)
     {
-        var filePath = GetFilePath();
-        if (!File.Exists(filePath))
+        if (string.IsNullOrWhiteSpace(userId) || !Guid.TryParse(id, out var buildId))
         {
-            return [];
+            return false;
         }
 
-        await using var stream = File.OpenRead(filePath);
-        var builds = await JsonSerializer.DeserializeAsync<List<SavedBuild>>(stream, cancellationToken: cancellationToken);
-        return builds ?? [];
+        await FileLock.WaitAsync(cancellationToken);
+        try
+        {
+            var filePath = GetFilePath();
+            var builds = await ReadAllBuildsAsync(cancellationToken);
+            var buildsList = builds.ToList();
+            var index = buildsList.FindIndex(b =>
+                b.Id == buildId && string.Equals(b.UserId, userId, StringComparison.Ordinal));
+            if (index < 0)
+            {
+                return false;
+            }
+
+            buildsList.RemoveAt(index);
+            await WriteAllBuildsAtomicAsync(filePath, buildsList, cancellationToken);
+            _logger.LogInformation("Deleted saved build {BuildId} for user {UserId}", buildId, userId);
+            return true;
+        }
+        finally
+        {
+            FileLock.Release();
+        }
     }
 
     private async Task WriteAllBuildsAtomicAsync(string filePath, List<SavedBuild> builds, CancellationToken cancellationToken)
     {
-        var tempPath = Path.Combine(Path.GetTempPath(), $"savedbuilds-{Guid.NewGuid():N}.tmp.json");
+        var appTempPath = Path.Combine(_environment.ContentRootPath, "Data", ".tmp");
+        if (!Directory.Exists(appTempPath))
+        {
+            Directory.CreateDirectory(appTempPath);
+        }
+
+        var tempPath = Path.Combine(appTempPath, $"savedbuilds-{Guid.NewGuid():N}.tmp.json");
         await using (var stream = File.Create(tempPath))
         {
             await JsonSerializer.SerializeAsync(stream, builds, SerializerOptions, cancellationToken);
@@ -115,10 +139,45 @@ public sealed class JsonSavedBuildRepository : ISavedBuildRepository
         {
             if (File.Exists(tempPath))
             {
-                File.Delete(tempPath);
+                try
+                {
+                    File.Delete(tempPath);
+                }
+                catch
+                {
+                    _logger.LogWarning("Failed to clean up temporary file: {Path}", tempPath);
+                }
             }
 
             throw;
+        }
+    }
+
+    private async Task<List<SavedBuild>> ReadAllBuildsAsync(CancellationToken cancellationToken)
+    {
+        var filePath = GetFilePath();
+        if (!File.Exists(filePath))
+        {
+            _logger.LogInformation("SavedBuilds file does not exist: {Path}", filePath);
+            return [];
+        }
+
+        try
+        {
+            await using var stream = File.OpenRead(filePath);
+            var builds = await JsonSerializer.DeserializeAsync<List<SavedBuild>>(stream, cancellationToken: cancellationToken);
+            _logger.LogDebug("Read {Count} saved builds from {Path}", builds?.Count ?? 0, filePath);
+            return builds ?? [];
+        }
+        catch (JsonException ex)
+        {
+            _logger.LogError(ex, "Failed to deserialize builds from {Path}", filePath);
+            return [];
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error reading builds from {Path}", filePath);
+            return [];
         }
     }
 

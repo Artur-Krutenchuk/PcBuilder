@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using PcBuilder.Web.Models;
 using PcBuilder.Web.Models.Auth;
-using PcBuilder.Web.Models.Components;
+using PcBuilder.Web.Models.ViewModels;
 using PcBuilder.Web.Services;
 
 namespace PcBuilder.Web.Controllers;
@@ -14,16 +14,16 @@ public sealed class ProfileController : Controller
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ISavedBuildService _savedBuildService;
-    private readonly IComponentService _componentService;
+    private readonly IProfileService _profileService;
 
     public ProfileController(
         UserManager<ApplicationUser> userManager,
         ISavedBuildService savedBuildService,
-        IComponentService componentService)
+        IProfileService profileService)
     {
         _userManager = userManager;
         _savedBuildService = savedBuildService;
-        _componentService = componentService;
+        _profileService = profileService;
     }
 
     [HttpGet]
@@ -42,75 +42,40 @@ public sealed class ProfileController : Controller
         }
 
         var builds = (await _savedBuildService.GetAllAsync(userId, cancellationToken)).ToList();
-        var components = await _componentService.GetAllAsync(cancellationToken);
-        var componentById = components.ToDictionary(c => c.Id);
-
-        var favoriteCategory = ComputeFavoriteCategory(builds);
-        var avgBudget = builds.Count > 0 ? builds.Average(b => b.TotalPrice) : 0m;
-        var manufacturerChart = ComputeManufacturerChart(builds, componentById);
+        var favoriteCategory = _profileService.ComputeFavoriteCategory(builds);
+        var averagePrice = _profileService.ComputeAverageBudget(builds);
+        var (bestCompat, avgCompat) = ComputeCompatibilityStats(builds);
+        var lastCreated = builds.Count == 0
+            ? (DateTime?)null
+            : builds.Max(b => b.CreatedAtUtc);
         var recent = builds.OrderByDescending(b => b.CreatedAtUtc).Take(8).ToList();
 
-        var model = new ProfileIndexViewModel
+        var model = new ProfileDashboardViewModel
         {
             UserName = user.UserName ?? user.Email ?? "User",
             Email = user.Email ?? string.Empty,
-            RegisteredAtUtc = user.RegisteredAtUtc,
-            SavedBuildCount = builds.Count,
-            FavoriteCategory = favoriteCategory,
-            AverageBuildBudget = Math.Round(avgBudget, 2, MidpointRounding.AwayFromZero),
-            RecentSavedBuilds = recent,
-            ManufacturerChartData = manufacturerChart
+            SavedBuildsCount = builds.Count,
+            AverageBuildPrice = averagePrice,
+            FavoriteBuildCategory = favoriteCategory,
+            BestCompatibilityPercentage = bestCompat,
+            AverageCompatibilityPercentage = avgCompat,
+            LastBuildCreatedAt = lastCreated,
+            RecentSavedBuilds = recent
         };
 
+        ViewData["Title"] = "Profile";
         return View(model);
     }
 
-    private static string ComputeFavoriteCategory(List<SavedBuild> builds)
+    private static (int Best, int Average) ComputeCompatibilityStats(IReadOnlyList<SavedBuild> builds)
     {
         if (builds.Count == 0)
         {
-            return "—";
+            return (0, 0);
         }
 
-        var grouped = builds
-            .GroupBy(b => string.IsNullOrWhiteSpace(b.BuildCategory) ? "Uncategorized" : b.BuildCategory.Trim())
-            .OrderByDescending(g => g.Count())
-            .First();
-
-        return grouped.Key;
-    }
-
-    private static IReadOnlyList<ManufacturerChartItem> ComputeManufacturerChart(
-        List<SavedBuild> builds,
-        IReadOnlyDictionary<int, Component> componentById)
-    {
-        var counts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-
-        foreach (var build in builds)
-        {
-            foreach (var id in new int?[]
-                     {
-                         build.CpuId, build.MotherboardId, build.RamId, build.GpuId, build.PsuId, build.CaseId,
-                         build.CoolerId
-                     })
-            {
-                if (id is null || !componentById.TryGetValue(id.Value, out var component))
-                {
-                    continue;
-                }
-
-                var name = string.IsNullOrWhiteSpace(component.Manufacturer)
-                    ? "Unknown"
-                    : component.Manufacturer.Trim();
-
-                counts[name] = counts.GetValueOrDefault(name) + 1;
-            }
-        }
-
-        return counts
-            .OrderByDescending(kv => kv.Value)
-            .Take(12)
-            .Select(kv => new ManufacturerChartItem { Name = kv.Key, Count = kv.Value })
-            .ToList();
+        var best = builds.Max(b => b.CompatibilityPercentage);
+        var avg = (int)Math.Round(builds.Average(b => b.CompatibilityPercentage), MidpointRounding.AwayFromZero);
+        return (best, avg);
     }
 }
