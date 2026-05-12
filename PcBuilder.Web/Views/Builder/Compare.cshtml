@@ -1,0 +1,60 @@
+@model PcBuilder.Web.Models.BuildComparisonResult
+@{
+    ViewData["Title"] = "Build Comparison";
+}
+
+<div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2 mb-4">
+    <div>
+        <h1 class="h2 mb-1 fw-bold">Build Comparison</h1>
+        <p class="text-secondary mb-0">Compare current build metrics against a saved build.</p>
+    </div>
+    <a asp-controller="Builder" asp-action="Index" class="btn btn-outline-secondary">Back to Builder</a>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body">
+        <div class="row g-3 mb-3">
+            <div class="col-12 col-md-6">
+                <div class="p-3 rounded border bg-body-tertiary">
+                    <div class="small text-secondary">Build A</div>
+                    <div class="fw-semibold">@Model.BuildA.BuildCategory</div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="p-3 rounded border bg-body-tertiary">
+                    <div class="small text-secondary">Build B</div>
+                    <div class="fw-semibold">@Model.BuildB.BuildCategory</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table align-middle comparison-table mb-0">
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th class="text-center">Build A</th>
+                        <th class="text-center">Build B</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var metric in Model.Metrics)
+                    {
+                        var aClass = metric.IsBuildABetter is null
+                            ? string.Empty
+                            : metric.IsBuildABetter.Value ? "comparison-better" : "comparison-worse";
+                        var bClass = metric.IsBuildABetter is null
+                            ? string.Empty
+                            : metric.IsBuildABetter.Value ? "comparison-worse" : "comparison-better";
+
+                        <tr>
+                            <td class="fw-semibold">@metric.Label</td>
+                            <td class="text-center @aClass">@metric.BuildAValue</td>
+                            <td class="text-center @bClass">@metric.BuildBValue</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -11,6 +11,7 @@ public sealed class SelectedBuild
     public int? GpuId { get; set; }
     public int? PsuId { get; set; }
     public int? CaseId { get; set; }
+    public int? CoolerId { get; set; }
 
     public Cpu? Cpu { get; set; }
     public Motherboard? Motherboard { get; set; }
@@ -18,4 +19,5 @@ public sealed class SelectedBuild
     public Gpu? Gpu { get; set; }
     public Psu? Psu { get; set; }
     public Case? Case { get; set; }
+    public Cooler? Cooler { get; set; }
 }

@@ -8,7 +8,10 @@
     var rams = Model.Components.Where(c => c.Type.Equals("ram", StringComparison.OrdinalIgnoreCase)).ToList();
     var gpus = Model.Components.Where(c => c.Type.Equals("gpu", StringComparison.OrdinalIgnoreCase)).ToList();
     var psus = Model.Components.Where(c => c.Type.Equals("psu", StringComparison.OrdinalIgnoreCase)).ToList();
+    var cases = Model.Components.Where(c => c.Type.Equals("case", StringComparison.OrdinalIgnoreCase)).ToList();
+    var coolers = Model.Components.Where(c => c.Type.Equals("cooler", StringComparison.OrdinalIgnoreCase)).ToList();
     var componentsJson = JsonSerializer.Serialize(Model.Components);
+    var savedBuildsJson = JsonSerializer.Serialize(Model.SavedBuilds);
 }
 
 <div class="builder-header d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2 mb-4">
@@ -145,6 +148,32 @@ else
                                     </td>
                                     <td class="text-secondary small d-none d-md-table-cell" id="quick-psu">-</td>
                                 </tr>
+                                <tr>
+                                    <td class="fw-semibold">Case</td>
+                                    <td>
+                                        <select class="form-select component-select" id="CaseId" name="CaseId" data-type="case">
+                                            <option value="">Select Case</option>
+                                            @foreach (var pcCase in cases)
+                                            {
+                                                <option value="@pcCase.Id" selected="@(Model.Build.CaseId == pcCase.Id)">@pcCase.Name</option>
+                                            }
+                                        </select>
+                                    </td>
+                                    <td class="text-secondary small d-none d-md-table-cell" id="quick-case">-</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-semibold">CPU Cooler</td>
+                                    <td>
+                                        <select class="form-select component-select" id="CoolerId" name="CoolerId" data-type="cooler">
+                                            <option value="">Select Cooler</option>
+                                            @foreach (var cooler in coolers)
+                                            {
+                                                <option value="@cooler.Id" selected="@(Model.Build.CoolerId == cooler.Id)">@cooler.Name</option>
+                                            }
+                                        </select>
+                                    </td>
+                                    <td class="text-secondary small d-none d-md-table-cell" id="quick-cooler">-</td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -158,6 +187,18 @@ else
                         <button id="check-compatibility-btn" type="button" class="btn btn-primary">
                             Check compatibility
                         </button>
+                        <button id="save-build-btn" type="button" class="btn btn-outline-success">
+                            Save build
+                        </button>
+                        <div class="dropdown">
+                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="export-build-btn" data-bs-toggle="dropdown" aria-expanded="false">
+                                Export Build
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="export-build-btn">
+                                <li><button id="export-build-json" class="dropdown-item" type="button">Export as JSON</button></li>
+                                <li><button id="export-build-txt" class="dropdown-item" type="button">Export as TXT summary</button></li>
+                            </ul>
+                        </div>
                         <div id="validation-spinner" class="spinner-border text-primary d-none" role="status" aria-hidden="true"></div>
                     </div>
                 </div>
@@ -186,6 +227,12 @@ else
                         <dt class="col-5">PSU</dt>
                         <dd id="summary-psu" class="col-7 text-end">-</dd>
 
+                        <dt class="col-5">Case</dt>
+                        <dd id="summary-case" class="col-7 text-end">-</dd>
+
+                        <dt class="col-5">Cooler</dt>
+                        <dd id="summary-cooler" class="col-7 text-end">-</dd>
+
                         <dt class="col-6 border-top pt-2 mt-2">Total price</dt>
                         <dd id="summary-total-price" class="col-6 text-end border-top pt-2 mt-2">$@Model.TotalPrice.ToString("0.00")</dd>
 
@@ -197,7 +244,160 @@ else
                         <div class="small text-secondary mb-1">Power Health</div>
                         <div id="summary-power-health-text" class="fw-semibold">Select components to evaluate wattage headroom.</div>
                     </div>
+
+                    <div class="rounded-3 p-3 bg-body-tertiary border mt-3">
+                        <div class="small text-secondary mb-2">Build Intelligence</div>
+                        <div class="d-flex justify-content-between">
+                            <span>Category</span>
+                            <strong id="summary-build-category">Uncategorized</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Compatibility</span>
+                            <strong id="summary-compatibility-percentage">0%</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Efficiency</span>
+                            <strong id="summary-efficiency-score">0 / 100</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Thermals</span>
+                            <strong id="summary-thermal-score">0 / 100</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>PSU health</span>
+                            <strong id="summary-psu-health-score">0 / 100</strong>
+                        </div>
+                        <hr class="my-2" />
+                        <div class="d-flex justify-content-between">
+                            <span>Estimated CPU temp</span>
+                            <strong id="summary-cpu-temp">0C</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Estimated GPU temp</span>
+                            <strong id="summary-gpu-temp">0C</strong>
+                        </div>
+                        <hr class="my-2" />
+                        <div class="small text-secondary mb-1">Gaming FPS Estimate</div>
+                        <div class="d-flex justify-content-between">
+                            <span>1080p</span>
+                            <strong id="summary-fps-1080p">N/A</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>1440p</span>
+                            <strong id="summary-fps-1440p">N/A</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>4K</span>
+                            <strong id="summary-fps-4k">N/A</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Ray tracing</span>
+                            <strong id="summary-fps-raytracing">N/A</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Competitive gaming</span>
+                            <strong id="summary-fps-competitive">N/A</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>AAA gaming</span>
+                            <strong id="summary-fps-aaa">N/A</strong>
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <div class="small text-secondary mb-2">Build Badges</div>
+                        <div id="summary-build-badges" class="d-flex flex-wrap gap-2">
+                            <span class="badge text-bg-secondary">No badges yet</span>
+                        </div>
+                    </div>
+
+                    <div class="rounded-3 p-3 bg-body-tertiary border mt-3">
+                        <div class="small text-secondary mb-2">Bottleneck Estimate</div>
+                        <div class="d-flex justify-content-between">
+                            <span>CPU bottleneck</span>
+                            <strong id="summary-cpu-bottleneck">0%</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>GPU bottleneck</span>
+                            <strong id="summary-gpu-bottleneck">0%</strong>
+                        </div>
+                    </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mt-4 border-0">
+        <div class="card-header bg-white border-0">
+            <h2 class="h5 mb-0 fw-semibold">Recommendations</h2>
+        </div>
+        <div class="card-body">
+            <div id="recommendations-list" class="row g-3">
+                <div class="col-12">
+                    <div class="alert alert-info mb-0">Run compatibility check to see build recommendations.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mt-4 border-0">
+        <div class="card-header bg-white border-0 d-flex align-items-center justify-content-between">
+            <h2 class="h5 mb-0 fw-semibold">Load Saved Builds</h2>
+            <button id="refresh-saved-builds-btn" type="button" class="btn btn-sm btn-outline-secondary">Refresh</button>
+        </div>
+        <div class="card-body">
+            <div id="saved-builds-list" class="row g-3">
+                @if (!Model.SavedBuilds.Any())
+                {
+                    <div class="col-12">
+                        <div class="alert alert-light border mb-0">No saved builds yet.</div>
+                    </div>
+                }
+                else
+                {
+                    @foreach (var savedBuild in Model.SavedBuilds)
+                    {
+                        <div class="col-12 col-md-6 col-xl-4">
+                            <div class="card border h-100 saved-build-card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="badge text-bg-primary">@savedBuild.BuildCategory</span>
+                                        <span class="badge text-bg-dark">@savedBuild.CompatibilityPercentage%</span>
+                                    </div>
+                                    <div class="small text-secondary mb-1">Total price: <strong>$@savedBuild.TotalPrice.ToString("0.00")</strong></div>
+                                    <div class="small text-secondary mb-1">Estimated wattage: <strong>@savedBuild.EstimatedWattage W</strong></div>
+                                    <div class="small text-secondary mb-3">Created: <strong>@savedBuild.CreatedAtUtc.ToLocalTime().ToString("g")</strong></div>
+                                    <div class="d-grid gap-2">
+                                        <button
+                                            type="button"
+                                            class="btn btn-outline-primary btn-sm w-100 load-build-btn"
+                                            data-cpu-id="@savedBuild.CpuId"
+                                            data-motherboard-id="@savedBuild.MotherboardId"
+                                            data-ram-id="@savedBuild.RamId"
+                                            data-gpu-id="@savedBuild.GpuId"
+                                            data-psu-id="@savedBuild.PsuId"
+                                            data-case-id="@savedBuild.CaseId"
+                                            data-cooler-id="@savedBuild.CoolerId">
+                                            Load build
+                                        </button>
+                                        <button
+                                            type="button"
+                                            class="btn btn-outline-dark btn-sm w-100 compare-build-btn"
+                                            data-cpu-id="@savedBuild.CpuId"
+                                            data-motherboard-id="@savedBuild.MotherboardId"
+                                            data-ram-id="@savedBuild.RamId"
+                                            data-gpu-id="@savedBuild.GpuId"
+                                            data-psu-id="@savedBuild.PsuId"
+                                            data-case-id="@savedBuild.CaseId"
+                                            data-cooler-id="@savedBuild.CoolerId">
+                                            Compare with current build
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
             </div>
         </div>
     </div>
@@ -285,7 +485,9 @@ else
                                 }
                                 else if (component is Case pcCase)
                                 {
-                                    <p class="mb-1 small">Form factors: @string.Join(", ", pcCase.SupportedFormFactors)</p>
+                                    <p class="mb-1 small">Motherboard sizes: @string.Join(", ", pcCase.SupportedMotherboardSizes)</p>
+                                    <p class="mb-1 small">Included fans: @pcCase.IncludedFans</p>
+                                    <p class="mb-1 small">Airflow rating: @(pcCase.AirflowRating > 0 ? $"{pcCase.AirflowRating}/100" : "—")</p>
                                     @if (pcCase.MaxGpuLengthMm is { } maxLen)
                                     {
                                         <p class="mb-0 small">Max GPU: @maxLen mm</p>
@@ -294,6 +496,12 @@ else
                                     {
                                         <p class="mb-0 small text-muted">Max GPU length not specified</p>
                                     }
+                                }
+                                else if (component is Cooler cooler)
+                                {
+                                    <p class="mb-1 small">Sockets: @string.Join(", ", cooler.SupportedSockets)</p>
+                                    <p class="mb-1 small">Cooling capacity: @cooler.CoolingCapacityWatts W</p>
+                                    <p class="mb-0 small">Noise: @cooler.NoiseLevelDb.ToString("0.#") dB</p>
                                 }
                             </div>
                         </div>
@@ -304,12 +512,27 @@ else
     </div>
 }
 
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1080;">
+    <div id="save-toast" class="toast align-items-center text-bg-success border-0" role="status" aria-live="polite" aria-atomic="true">
+        <div class="d-flex">
+            <div id="save-toast-message" class="toast-body">Build saved successfully.</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
 @section Scripts
 {
     <script>
         window.pcBuilderConfig = {
             components: @Html.Raw(componentsJson),
-            validateUrl: '@Url.Action("Validate", "Builder")'
+            savedBuilds: @Html.Raw(savedBuildsJson),
+            validateUrl: '@Url.Action("Validate", "Builder")',
+            compatibleOptionsUrl: '@Url.Action("CompatibleOptions", "Builder")',
+            saveBuildUrl: '@Url.Action("SaveBuild", "Builder")',
+            savedBuildsUrl: '@Url.Action("SavedBuilds", "Builder")',
+            compareUrl: '@Url.Action("Compare", "Builder")',
+            exportBuildUrl: '@Url.Action("ExportBuild", "Builder")'
         };
     </script>
 }

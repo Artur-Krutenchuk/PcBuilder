@@ -3,8 +3,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<PcBuilder.Web.Repositories.IComponentRepository, PcBuilder.Web.Repositories.JsonComponentRepository>();
+builder.Services.AddScoped<PcBuilder.Web.Repositories.ISavedBuildRepository, PcBuilder.Web.Repositories.JsonSavedBuildRepository>();
 builder.Services.AddScoped<PcBuilder.Web.Services.IComponentService, PcBuilder.Web.Services.JsonComponentService>();
 builder.Services.AddScoped<PcBuilder.Web.Services.ICompatibilityService, PcBuilder.Web.Services.CompatibilityService>();
+builder.Services.AddScoped<PcBuilder.Web.Services.ISavedBuildService, PcBuilder.Web.Services.JsonSavedBuildService>();
 
 var app = builder.Build();
 
