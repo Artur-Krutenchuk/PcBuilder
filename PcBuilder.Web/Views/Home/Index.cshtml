@@ -1,13 +1,309 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model PcBuilder.Web.Models.HomeIndexViewModel
+@{
+    ViewData["Title"] = "Build smarter PCs";
 }
 
-<div class="p-4 p-md-5 mb-4 bg-light border rounded-3">
-    <div class="container-fluid py-2">
-        <h1 class="display-6 fw-bold">PC Builder</h1>
-        <p class="col-md-8 fs-5 mb-4">
-            Build your next PC by selecting compatible components from the BuildCores JSON catalog.
-        </p>
-        <a class="btn btn-primary btn-lg" asp-controller="Builder" asp-action="Index">Open Builder</a>
+<section class="landing-hero position-relative overflow-hidden">
+    <div class="landing-hero-bg"></div>
+    <div class="container position-relative py-5 landing-section-y-lg">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-7 landing-animate">
+                <p class="text-uppercase small fw-semibold landing-track-wide text-primary mb-2">PcBuilder.Web</p>
+                <h1 class="display-3 fw-bold lh-sm mb-3">
+                    Configure a balanced PC with confidence.
+                </h1>
+                <p class="lead text-secondary mb-4 mb-lg-5 pe-lg-5">
+                    Pair parts from the JSON-powered catalog, validate compatibility in real time, and explore FPS, thermal, and bottleneck signals before you commit.
+                </p>
+                <div class="d-flex flex-column flex-sm-row flex-wrap gap-2 gap-sm-3 mb-4">
+                    <a class="btn btn-primary btn-lg px-4 shadow-sm landing-btn-rise" asp-controller="Builder" asp-action="Index">
+                        Start building
+                    </a>
+                    <a class="btn btn-outline-light btn-lg px-4 border-2 landing-btn-rise text-dark bg-white bg-opacity-75" asp-controller="Builder" asp-action="Index" asp-fragment="saved-builds">
+                        View saved builds
+                    </a>
+                </div>
+                <div class="d-flex flex-wrap gap-3 small">
+                    <a class="link-dark link-underline-opacity-25 link-underline-opacity-100-hover fw-semibold" href="#features">
+                        <i class="bi bi-arrow-down-circle me-1"></i> Feature tour
+                    </a>
+                    <a class="link-dark link-underline-opacity-25 link-underline-opacity-100-hover fw-semibold" href="#stats">
+                        Live catalog metrics
+                    </a>
+                    <a class="link-dark link-underline-opacity-25 link-underline-opacity-100-hover fw-semibold" href="#popular-builds">
+                        Popular builds
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-5 landing-animate landing-animate-delay-1">
+                <div class="landing-hero-panel card border-0 shadow-lg rounded-4 p-4 p-md-5 bg-white bg-opacity-95 landing-backdrop-blur">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <span class="landing-icon-ring text-primary"><i class="bi bi-lightning-charge-fill fs-4"></i></span>
+                        <div>
+                            <div class="fw-semibold">Instant validation</div>
+                            <div class="small text-secondary">Socket, power, RAM type, clearance, and more.</div>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <span class="landing-icon-ring text-success"><i class="bi bi-graph-up-arrow fs-4"></i></span>
+                        <div>
+                            <div class="fw-semibold">Rich estimates</div>
+                            <div class="small text-secondary">FPS curves, thermals, bottlenecks, and badges.</div>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="landing-icon-ring text-info"><i class="bi bi-cloud-arrow-down fs-4"></i></span>
+                        <div>
+                            <div class="fw-semibold">Export &amp; compare</div>
+                            <div class="small text-secondary">JSON or TXT summaries plus side-by-side builds.</div>
+                        </div>
+                    </div>
+                    <hr class="my-4 opacity-25" />
+                    <div class="row g-2 text-center small">
+                        <div class="col-4">
+                            <div class="fw-bold fs-5 text-primary">@Model.ComponentCount</div>
+                            <div class="text-secondary">Parts</div>
+                        </div>
+                        <div class="col-4">
+                            <div class="fw-bold fs-5 text-primary">@Model.SupportedSocketCount</div>
+                            <div class="text-secondary">Sockets</div>
+                        </div>
+                        <div class="col-4">
+                            <div class="fw-bold fs-5 text-primary">@Model.BuildCategoryCount</div>
+                            <div class="text-secondary">Categories</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
+</section>
+
+<section id="features" class="py-5 landing-section-y-lg bg-white border-bottom">
+    <div class="container">
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-8 text-center landing-reveal">
+                <h2 class="fw-bold display-6 mb-3">Everything you need to iterate fast</h2>
+                <p class="lead text-secondary mb-0">
+                    Deep compatibility intelligence backs every selection — tuned for the classroom demo catalog and ready for your next dataset swap.
+                </p>
+            </div>
+        </div>
+        <div class="row g-4">
+            @{
+                var features = new[]
+                {
+                    ("Smart Compatibility Validation", "bi-shield-check", "Catch socket mismatches, RAM types, board sizing, GPU clearance, and power deficits before checkout."),
+                    ("FPS Estimation", "bi-controller", "Gaming builds unlock multi-resolution FPS scenarios including ray tracing, competitive, and AAA blends."),
+                    ("Thermal Analysis", "bi-thermometer-half", "Estimated CPU/GPU temperatures blend airflow ratings, cooler capacity, and PSU headroom stress."),
+                    ("Bottleneck Detection", "bi-diagram-3", "Directional CPU/GPU imbalance hints keep upgrades purposeful instead of guesswork."),
+                    ("Build Saving", "bi-bookmark-heart", "Authenticated builders snapshot rigs with totals, wattage, and compatibility scores for quick reload."),
+                    ("Performance Scoring", "bi-speedometer2", "Compatibility percentage plus efficiency, thermal, and PSU health scores summarize rig quality.")
+                };
+                var delay = 0;
+            }
+            @foreach (var (title, icon, copy) in features)
+            {
+                delay++;
+                <div class="col-md-6 col-xl-4 landing-reveal" style="animation-delay: @(delay * 40)ms">
+                    <div class="card h-100 border-0 shadow-sm landing-feature-card rounded-4 p-4">
+                        <div class="d-flex align-items-start gap-3">
+                            <span class="landing-feature-icon text-bg-primary bg-opacity-10 text-primary rounded-3 p-3">
+                                <i class="bi @icon fs-4"></i>
+                            </span>
+                            <div>
+                                <h3 class="h5 fw-semibold mb-2">@title</h3>
+                                <p class="text-secondary small mb-0">@copy</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<section id="stats" class="py-5 landing-section-y-lg landing-stats-section">
+    <div class="container">
+        <div class="row g-4 align-items-start mb-4 mb-lg-5">
+            <div class="col-lg-4 landing-reveal">
+                <p class="text-uppercase small fw-semibold text-primary mb-2">By the numbers</p>
+                <h2 class="fw-bold display-6 mb-3">Catalog &amp; engine telemetry</h2>
+                <p class="text-secondary mb-0">
+                    Rolling totals derive straight from <code class="small bg-white px-2 py-1 rounded">buildcores.json</code>, while engine metrics highlight how deep each compatibility pass goes.
+                </p>
+            </div>
+            <div class="col-lg-8">
+                <div class="row g-3">
+                    @foreach (var stat in Model.CatalogStats)
+                    {
+                        <div class="col-md-6 landing-reveal">
+                            <div class="card border-0 shadow-sm h-100 landing-stat-card rounded-4">
+                                <div class="card-body p-4 d-flex gap-3">
+                                    <div class="landing-stat-icon text-primary"><i class="bi @stat.IconClass fs-3"></i></div>
+                                    <div>
+                                        <div class="text-secondary small text-uppercase fw-semibold mb-1">@stat.Label</div>
+                                        <div class="display-6 fw-bold lh-1 mb-2">@stat.Value</div>
+                                        <p class="small text-secondary mb-0">@stat.Description</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-12 landing-reveal">
+                <h3 class="h5 fw-semibold mb-3">Compatibility engine metrics</h3>
+            </div>
+            @foreach (var metric in Model.EngineMetrics)
+            {
+                <div class="col-6 col-lg-3 landing-reveal">
+                    <div class="card border border-2 border-light shadow-sm h-100 rounded-4 landing-metric-tile">
+                        <div class="card-body p-4">
+                            <i class="bi @metric.IconClass fs-2 text-primary mb-3 d-block"></i>
+                            <div class="text-secondary small fw-semibold mb-1">@metric.Label</div>
+                            <div class="fs-3 fw-bold mb-2">@metric.Value</div>
+                            <p class="small text-muted mb-0">@metric.Description</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<section id="popular-builds" class="py-5 landing-section-y-lg bg-white border-top border-bottom">
+    <div class="container">
+        <div class="d-flex flex-column flex-lg-row align-items-lg-end justify-content-lg-between gap-3 mb-4 mb-lg-5 landing-reveal">
+            <div>
+                <p class="text-uppercase small fw-semibold text-primary mb-2">Curated presets</p>
+                <h2 class="fw-bold display-6 mb-2">Popular builds</h2>
+                <p class="text-secondary mb-0">
+                    Each carousel slide is a validated configuration from the catalog — tap through for inspiration, then load it directly into the builder.
+                </p>
+            </div>
+            <a class="btn btn-primary btn-lg px-4 landing-btn-rise align-self-start align-self-lg-auto" asp-controller="Builder" asp-action="Index">
+                Launch builder
+            </a>
+        </div>
+
+        @if (!Model.PopularBuilds.Any())
+        {
+            <div class="alert alert-light border rounded-4">Popular builds will appear once component data is available.</div>
+        }
+        else
+        {
+            <div id="popularBuildsCarousel" class="carousel slide carousel-dark landing-reveal" data-bs-ride="carousel">
+                <div class="carousel-indicators position-relative mb-4">
+                    @for (var idx = 0; idx < Model.PopularBuilds.Count; idx++)
+                    {
+                        <button type="button" data-bs-target="#popularBuildsCarousel" data-bs-slide-to="@idx" class="@(idx == 0 ? "active" : null)" aria-current="@(idx == 0 ? "true" : null)" aria-label="Slide @(idx + 1)"></button>
+                    }
+                </div>
+                <div class="carousel-inner rounded-4 overflow-hidden">
+                    @for (var i = 0; i < Model.PopularBuilds.Count; i++)
+                    {
+                        var build = Model.PopularBuilds[i];
+                        <div class="carousel-item @(i == 0 ? "active" : null)">
+                            <div class="card border-0 shadow-lg landing-carousel-card mx-auto overflow-hidden">
+                                <div class="row g-0">
+                                    <div class="col-lg-5 position-relative landing-carousel-visual">
+                                        @if (!string.IsNullOrWhiteSpace(build.HeroImageUrl))
+                                        {
+                                            <img src="@build.HeroImageUrl" class="w-100 h-100 landing-img-cover" alt="" />
+                                        }
+                                        else
+                                        {
+                                            <div class="w-100 h-100 bg-body-secondary d-flex align-items-center justify-content-center">
+                                                <i class="bi bi-gpu-card fs-1 text-secondary"></i>
+                                            </div>
+                                        }
+                                        <div class="position-absolute top-0 start-0 m-3">
+                                            <span class="badge text-bg-@build.AccentClass px-3 py-2 rounded-pill">@build.Category</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-7">
+                                        <div class="card-body p-4 p-lg-5 d-flex flex-column h-100">
+                                            <div class="mb-3">
+                                                <h3 class="h3 fw-bold mb-2">@build.Title</h3>
+                                                <p class="text-secondary mb-0">@build.Subtitle</p>
+                                            </div>
+                                            <dl class="row small mb-4">
+                                                <dt class="col-sm-3 text-secondary">CPU</dt>
+                                                <dd class="col-sm-9 fw-semibold">@build.CpuName</dd>
+                                                <dt class="col-sm-3 text-secondary">GPU</dt>
+                                                <dd class="col-sm-9 fw-semibold">@build.GpuName</dd>
+                                                <dt class="col-sm-3 text-secondary">Budget</dt>
+                                                <dd class="col-sm-9 fw-semibold">@build.TotalPrice.ToString("C2")</dd>
+                                            </dl>
+                                            <div class="mt-auto d-flex flex-wrap gap-2">
+                                                <a class="btn btn-@build.AccentClass btn-lg"
+                                                   asp-controller="Builder"
+                                                   asp-action="Index"
+                                                   asp-route-cpuId="@build.CpuId"
+                                                   asp-route-motherboardId="@build.MotherboardId"
+                                                   asp-route-ramId="@build.RamId"
+                                                   asp-route-gpuId="@build.GpuId"
+                                                   asp-route-psuId="@build.PsuId"
+                                                   asp-route-caseId="@build.CaseId"
+                                                   asp-route-coolerId="@build.CoolerId">
+                                                    Try this build
+                                                </a>
+                                                <a class="btn btn-outline-secondary btn-lg" asp-controller="Builder" asp-action="Compare">
+                                                    Open compare tool
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <button class="carousel-control-prev landing-carousel-control" type="button" data-bs-target="#popularBuildsCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon rounded-circle bg-dark bg-opacity-50 p-4" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next landing-carousel-control" type="button" data-bs-target="#popularBuildsCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon rounded-circle bg-dark bg-opacity-50 p-4" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+        }
+    </div>
+</section>
+
+<section class="py-5 bg-body-secondary border-top">
+    <div class="container">
+        <div class="row justify-content-between align-items-center g-4 landing-reveal">
+            <div class="col-lg-8">
+                <h2 class="h3 fw-bold mb-2">Ready to stress-test your next rig?</h2>
+                <p class="text-secondary mb-0">Jump into the builder, run AJAX validation, and export the proof.</p>
+            </div>
+            <div class="col-lg-auto d-flex flex-column flex-sm-row gap-2">
+                <a class="btn btn-primary btn-lg px-4 landing-btn-rise" asp-controller="Builder" asp-action="Index">Start building</a>
+                <a class="btn btn-outline-dark btn-lg px-4 landing-btn-rise" asp-controller="Builder" asp-action="Index" asp-fragment="saved-builds">Saved builds</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll(".landing-reveal").forEach(el => {
+            el.classList.add("landing-reveal-pending");
+        });
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) return;
+                entry.target.classList.add("landing-reveal-visible");
+                entry.target.classList.remove("landing-reveal-pending");
+                observer.unobserve(entry.target);
+            });
+        }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
+        document.querySelectorAll(".landing-reveal").forEach(el => observer.observe(el));
+    </script>
+}

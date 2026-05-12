@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using PcBuilder.Web.Models;
 using PcBuilder.Web.Models.Components;
 using PcBuilder.Web.Models.DTOs;
@@ -6,6 +7,7 @@ using PcBuilder.Web.Models.Responses;
 using PcBuilder.Web.Services;
 using System.Text;
 using System.Text.Json;
+using System.Security.Claims;
 
 namespace PcBuilder.Web.Controllers;
 
@@ -27,11 +29,45 @@ public sealed class BuilderController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Index(CancellationToken cancellationToken)
+    public async Task<IActionResult> Index(
+        int? cpuId,
+        int? motherboardId,
+        int? ramId,
+        int? gpuId,
+        int? psuId,
+        int? caseId,
+        int? coolerId,
+        CancellationToken cancellationToken)
     {
         var components = await _componentService.GetAllAsync(cancellationToken);
-        var savedBuilds = await _savedBuildService.GetAllAsync(cancellationToken);
-        var model = BuildViewModel(components, savedBuilds, new SelectedBuild(), null, 0m, 0);
+        var savedBuilds = User.Identity?.IsAuthenticated == true
+            ? await _savedBuildService.GetAllAsync(GetUserId(), cancellationToken)
+            : [];
+        var selection = new SelectedBuild
+        {
+            CpuId = cpuId,
+            MotherboardId = motherboardId,
+            RamId = ramId,
+            GpuId = gpuId,
+            PsuId = psuId,
+            CaseId = caseId,
+            CoolerId = coolerId
+        };
+        HydrateBuildSelections(selection, components);
+        var compatibilityPreview = selection.CpuId is not null || selection.GpuId is not null
+            ? _compatibilityService.Check(selection)
+            : null;
+        var totalPrice = CalculateTotalPrice(selection);
+        var estimatedWattage = CalculateEstimatedWattage(selection);
+        var model = BuildViewModel(
+            components,
+            savedBuilds,
+            selection,
+            compatibilityPreview,
+            totalPrice,
+            estimatedWattage == 0 && compatibilityPreview is not null
+                ? compatibilityPreview.EstimatedSystemWattage
+                : estimatedWattage);
         return View(model);
     }
 
@@ -40,7 +76,9 @@ public sealed class BuilderController : Controller
     public async Task<IActionResult> Index(SelectedBuild build, CancellationToken cancellationToken)
     {
         var components = await _componentService.GetAllAsync(cancellationToken);
-        var savedBuilds = await _savedBuildService.GetAllAsync(cancellationToken);
+        var savedBuilds = User.Identity?.IsAuthenticated == true
+            ? await _savedBuildService.GetAllAsync(GetUserId(), cancellationToken)
+            : [];
         HydrateBuildSelections(build, components);
         var compatibilityResult = _compatibilityService.Check(build);
         var model = BuildViewModel(
@@ -102,8 +140,13 @@ public sealed class BuilderController : Controller
     }
 
     [HttpPost]
+    [Authorize]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> SaveBuild([FromForm] SelectedBuild build, CancellationToken cancellationToken)
+    public async Task<IActionResult> SaveBuild(
+        [FromForm] SelectedBuild build,
+        [FromForm] string? buildName,
+        [FromForm] bool isPublic,
+        CancellationToken cancellationToken)
     {
         var components = await _componentService.GetAllAsync(cancellationToken);
         HydrateBuildSelections(build, components);
@@ -112,8 +155,21 @@ public sealed class BuilderController : Controller
         var totalPrice = CalculateTotalPrice(build);
         var estimatedWattage = CalculateEstimatedWattage(build);
 
+        var trimmedName = string.IsNullOrWhiteSpace(buildName)
+            ? string.Empty
+            : buildName.Trim();
+        if (trimmedName.Length > 120)
+        {
+            trimmedName = trimmedName[..120];
+        }
+
         var savedBuild = new SavedBuild
         {
+            UserId = GetUserId(),
+            Name = trimmedName,
+            IsPublic = isPublic,
+            CreatorUserName = User.Identity?.Name ?? string.Empty,
+            EstimatedFps1080p = compatibilityResult.EstimatedFps1080p,
             CpuId = build.CpuId,
             MotherboardId = build.MotherboardId,
             RamId = build.RamId,
@@ -138,9 +194,10 @@ public sealed class BuilderController : Controller
     }
 
     [HttpGet]
+    [Authorize]
     public async Task<IActionResult> SavedBuilds(CancellationToken cancellationToken)
     {
-        var builds = await _savedBuildService.GetAllAsync(cancellationToken);
+        var builds = await _savedBuildService.GetAllAsync(GetUserId(), cancellationToken);
         return Json(builds);
     }
 
@@ -467,5 +524,10 @@ public sealed class BuilderController : Controller
 
         var ramReserve = (int)Math.Ceiling((ramCapacityGb / 16m) * 5m);
         return cpuTdp + gpuTdp + BaseSystemReserveWatts + ramReserve;
+    }
+
+    private string GetUserId()
+    {
+        return User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
     }
 }

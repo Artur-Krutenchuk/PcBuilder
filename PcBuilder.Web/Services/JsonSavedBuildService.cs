@@ -12,9 +12,14 @@ public sealed class JsonSavedBuildService : ISavedBuildService
         _savedBuildRepository = savedBuildRepository;
     }
 
-    public async Task<IReadOnlyList<SavedBuild>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<SavedBuild>> GetAllAsync(string userId, CancellationToken cancellationToken = default)
     {
-        return await _savedBuildRepository.GetAllAsync(cancellationToken);
+        return await _savedBuildRepository.GetAllAsync(userId, cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<SavedBuild>> GetPublicGalleryAsync(CancellationToken cancellationToken = default)
+    {
+        return await _savedBuildRepository.GetPublicAsync(cancellationToken);
     }
 
     public async Task SaveAsync(SavedBuild build, CancellationToken cancellationToken = default)
